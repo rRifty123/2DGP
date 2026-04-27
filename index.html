@@ -178,15 +178,14 @@
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCPTMfSDrUa7-4GQZ1Z85uDm4ND_WVQR6I",
-        authDomain: "dgp-88a38.firebaseapp.com",
-        projectId: "dgp-88a38",
-        storageBucket: "dgp-88a38.firebasestorage.app",
-        messagingSenderId: "481321958468",
-        appId: "1:481321958468:web:28e2b88508beb8cb0c1011",
-        measurementId: "G-X0GXHHCTPL"
-    };
+   const firebaseConfig = {
+  apiKey: "AIzaSyCPTMfSDrUa7-4GQZ1Z85uDm4ND_WVQR6I",
+  authDomain: "dgp-88a38.firebaseapp.com",
+  projectId: "dgp-88a38",
+  storageBucket: "dgp-88a38.firebasestorage.app", // Check this line!
+  messagingSenderId: "481321958468",
+  appId: "1:481321958468:web:28e2b88508beb8cb0c1011"
+};
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
