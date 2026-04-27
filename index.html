@@ -6,153 +6,292 @@
     <title>2DGP - 2D Game Platform</title>
     <style>
         :root {
-            --bg-color: #1a1a1a;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
             --text-color: #ffffff;
             --accent-color: #00ff88;
+            --danger-color: #ff4444;
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
             display: flex;
+            transition: background 0.3s, font-family 0.3s;
         }
 
         /* Sidebar Navigation */
         nav {
-            width: 250px;
+            width: 240px;
             height: 100vh;
-            background: #111;
+            background: #0a0a0a;
             padding: 20px;
             border-right: 1px solid #333;
             position: fixed;
+            display: flex;
+            flex-direction: column;
         }
 
-        .logo { font-size: 24px; font-weight: bold; color: var(--accent-color); margin-bottom: 30px; }
+        .logo { font-size: 28px; font-weight: 800; color: var(--accent-color); margin-bottom: 40px; letter-spacing: -1px; }
         
         .nav-item {
-            padding: 12px;
+            padding: 15px;
+            margin: 5px 0;
             cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
+            border-radius: 8px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .nav-item:hover { background: #222; }
+        .nav-item:hover { background: #222; color: var(--accent-color); }
+        .nav-item.active-nav { background: var(--accent-color); color: #000; font-weight: bold; }
 
         /* Main Content */
         main {
-            margin-left: 290px;
+            margin-left: 280px;
             padding: 40px;
-            width: 100%;
+            width: calc(100% - 280px);
         }
 
-        .view { display: none; }
+        .view { display: none; animation: fadeIn 0.4s ease; }
         .active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Auth Styles */
+        #auth-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000; display: flex; align-items: center; justify-content: center;
+        }
+        .auth-box { background: var(--card-bg); padding: 30px; border-radius: 15px; width: 350px; text-align: center; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #444; background: #000; color: #fff; }
 
         /* Game Grid */
         .game-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
         }
 
         .game-card {
-            background: #222;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            border: 1px solid #444;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #333;
+            transition: 0.3s;
         }
+        .game-card:hover { border-color: var(--accent-color); transform: translateY(-5px); }
 
-        button {
-            background: var(--accent-color);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
+        .btn {
+            background: var(--accent-color); color: #000; border: none;
+            padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;
         }
+        .btn-report { background: var(--danger-color); color: #fff; margin-top: 10px; font-size: 12px; }
 
-        .online-dot {
-            height: 10px;
-            width: 10px;
-            background-color: #00ff00;
-            border-radius: 50%;
-            display: inline-block;
-        }
+        .online-dot { height: 10px; width: 10px; background-color: #00ff00; border-radius: 50%; display: inline-block; margin-right: 8px; }
+
+        /* Editor */
+        #gameCode { width: 100%; height: 400px; font-family: monospace; background: #000; color: #0f0; padding: 15px; border-radius: 10px; }
     </style>
 </head>
 <body>
 
+<div id="auth-overlay">
+    <div class="auth-box">
+        <h2 id="auth-title">Welcome to 2DGP</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <input type="text" id="username" placeholder="Username (Sign up only)">
+        <button class="btn" onclick="handleAuth()">Submit</button>
+        <p onclick="toggleAuthMode()" style="cursor:pointer; font-size: 14px; margin-top:15px; color: #888;">Switch Login/Signup</p>
+    </div>
+</div>
+
 <nav>
     <div class="logo">2DGP</div>
-    <div class="nav-item" onclick="showView('home')">🏠 Home / Games</div>
-    <div class="nav-item" onclick="showView('create')">🛠️ Create Game</div>
-    <div class="nav-item" onclick="showView('profile')">👤 My Account</div>
-    <div class="nav-item" onclick="showView('friends')">👥 Friends List</div>
-    <div class="nav-item" onclick="showView('settings')">⚙️ Settings</div>
+    <div class="nav-item active-nav" onclick="showView('home', this)">🏠 Home</div>
+    <div class="nav-item" onclick="showView('create', this)">🛠️ Create Game</div>
+    <div class="nav-item" onclick="showView('mygames', this)">🎮 My Games</div>
+    <div class="nav-item" onclick="showView('friends', this)">👥 Friends</div>
+    <div class="nav-item" onclick="showView('settings', this)">⚙️ Settings</div>
+    <div style="margin-top:auto" class="nav-item" onclick="logout()">🚪 Logout</div>
 </nav>
 
 <main>
     <section id="home" class="view active">
-        <h1>Featured Games</h1>
+        <h1>Discover Games</h1>
         <div class="game-grid">
-            <div class="game-card"><h3>Snake</h3><button>Play</button></div>
-            <div class="game-card"><h3>Tic Tac Toe</h3><button>Play</button></div>
-            <div class="game-card"><h3>Pong</h3><button>Play</button></div>
-            <div class="game-card"><h3>Breakout</h3><button>Play</button></div>
-            <div class="game-card"><h3>Flappy Bird</h3><button>Play</button></div>
-            <div class="game-card"><h3>2048</h3><button>Play</button></div>
+            <div class="game-card"><h3>Snake Classic</h3><p>Avoid the walls!</p><button class="btn">Play</button></div>
+            <div class="game-card"><h3>Tic Tac Toe</h3><p>3 in a row.</p><button class="btn">Play</button></div>
+            <div class="game-card"><h3>Pong</h3><p>Retro paddle action.</p><button class="btn">Play</button></div>
+            <div class="game-card"><h3>Breakout</h3><p>Smash the blocks.</p><button class="btn">Play</button></div>
+            <div class="game-card"><h3>Flappy Square</h3><p>Don't fall!</p><button class="btn">Play</button></div>
+            <div class="game-card"><h3>2048</h3><p>Math puzzle.</p><button class="btn">Play</button></div>
         </div>
     </section>
 
     <section id="create" class="view">
         <h1>Game Editor</h1>
-        <textarea id="gameCode" style="width:100%; height:300px; background:#000; color:#0f0;" placeholder="Paste your HTML/JS code here..."></textarea><br><br>
-        <button onclick="publishGame()">Publish Game</button>
+        <p>Write your HTML/JS code below to publish your own game.</p>
+        <input type="text" id="newGameTitle" placeholder="Game Title">
+        <textarea id="gameCode" placeholder="<html>...your code here...</html>"></textarea><br><br>
+        <button class="btn" onclick="publishGame()">🚀 Publish to 2DGP</button>
     </section>
 
-    <section id="settings" class="view">
-        <h1>Settings</h1>
-        <label>Background Color:</label>
-        <input type="color" id="bgColor" onchange="updateSettings()"><br><br>
-        <label>Font Style:</label>
-        <select id="fontSelect" onchange="updateSettings()">
-            <option value="Arial">Arial</option>
-            <option value="Courier New">Retro (Courier)</option>
-            <option value="Georgia">Classic (Georgia)</option>
-        </select>
+    <section id="mygames" class="view">
+        <h1>Your Creations</h1>
+        <div id="user-games-list" class="game-grid">
+            <p>You haven't published any games yet.</p>
+        </div>
     </section>
 
     <section id="friends" class="view">
-        <h1>Friends</h1>
-        <div id="friendList">
-            <p><span class="online-dot"></span> PlayerOne (Online)</p>
-            <p><span class="online-dot" style="background:#555"></span> DevUser (Offline)</p>
+        <h1>Friends Online</h1>
+        <div id="friends-list">
+            <div class="game-card"><span class="online-dot"></span> <b>SystemAdmin</b> (Online)</div>
+        </div>
+    </section>
+
+    <section id="settings" class="view">
+        <h1>Platform Settings</h1>
+        <div class="game-card">
+            <label>Background Color:</label><br>
+            <input type="color" id="bgPicker" value="#121212" onchange="applySettings()"><br><br>
+            
+            <label>Interface Font:</label><br>
+            <select id="fontPicker" onchange="applySettings()" style="width:100%; padding:10px; background:#000; color:#fff;">
+                <option value="'Segoe UI'">Modern (Default)</option>
+                <option value="'Courier New'">Retro Coding</option>
+                <option value="'Georgia'">Classic Serif</option>
+                <option value="Impact">Bold Impact</option>
+            </select>
         </div>
     </section>
 </main>
 
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCPTMfSDrUa7-4GQZ1Z85uDm4ND_WVQR6I",
+        authDomain: "dgp-88a38.firebaseapp.com",
+        projectId: "dgp-88a38",
+        storageBucket: "dgp-88a38.firebasestorage.app",
+        messagingSenderId: "481321958468",
+        appId: "1:481321958468:web:28e2b88508beb8cb0c1011",
+        measurementId: "G-X0GXHHCTPL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let isSignUp = false;
+
+    // --- Auth Logic ---
+    window.toggleAuthMode = () => {
+        isSignUp = !isSignUp;
+        document.getElementById('auth-title').innerText = isSignUp ? "Create Account" : "Welcome Back";
+        document.getElementById('username').style.display = isSignUp ? "block" : "none";
+    };
+
+    window.handleAuth = async () => {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const username = document.getElementById('username').value;
+
+        try {
+            if (isSignUp) {
+                const res = await createUserWithEmailAndPassword(auth, email, password);
+                await setDoc(doc(db, "users", res.user.uid), { username, font: 'Segoe UI', bg: '#121212' });
+            } else {
+                await signInWithEmailAndPassword(auth, email, password);
+            }
+            document.getElementById('auth-overlay').style.display = 'none';
+        } catch (e) { alert(e.message); }
+    };
+
+    window.logout = () => signOut(auth).then(() => location.reload());
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById('auth-overlay').style.display = 'none';
+            loadUserGames();
+            // Load user custom settings
+            const docSnap = await getDoc(doc(db, "users", user.uid));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.body.style.backgroundColor = data.bg;
+                document.body.style.fontFamily = data.font;
+            }
+        }
+    });
+
+    // --- Game Logic ---
+    window.publishGame = async () => {
+        const title = document.getElementById('newGameTitle').value;
+        const code = document.getElementById('gameCode').value;
+        if (!title || !code) return alert("Fill in title and code!");
+
+        await addDoc(collection(db, "games"), {
+            uid: auth.currentUser.uid,
+            author: auth.currentUser.email,
+            title: title,
+            code: code,
+            hearts: 0,
+            reports: 0
+        });
+        alert("Game Published!");
+        showView('mygames');
+        loadUserGames();
+    };
+
+    async function loadUserGames() {
+        const q = query(collection(db, "games"), where("uid", "==", auth.currentUser.uid));
+        const querySnapshot = await getDocs(q);
+        const container = document.getElementById('user-games-list');
+        container.innerHTML = "";
+        querySnapshot.forEach((gameDoc) => {
+            const data = gameDoc.data();
+            container.innerHTML += `
+                <div class="game-card">
+                    <h3>${data.title}</h3>
+                    <button class="btn">Edit</button>
+                    <button class="btn btn-report" onclick="deleteGame('${gameDoc.id}')">Delete</button>
+                </div>`;
+        });
+    }
+
+    window.deleteGame = async (id) => {
+        if(confirm("Delete this game?")) {
+            await deleteDoc(doc(db, "games", id));
+            loadUserGames();
+        }
+    };
+</script>
+
 <script>
-    function showView(viewId) {
+    // UI Navigation Logic
+    function showView(viewId, el) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
+        
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
+        if(el) el.classList.add('active-nav');
     }
 
-    function updateSettings() {
-        const bg = document.getElementById('bgColor').value;
-        const font = document.getElementById('fontSelect').value;
+    function applySettings() {
+        const bg = document.getElementById('bgPicker').value;
+        const font = document.getElementById('fontPicker').value;
         document.body.style.backgroundColor = bg;
         document.body.style.fontFamily = font;
-    }
-
-    function publishGame() {
-        const code = document.getElementById('gameCode').value;
-        if(code) {
-            alert("Game Published to 'Your Games'!");
-            // In a real app, you'd send 'code' to your database here.
-        }
+        // In a full build, you'd save these to Firestore here
     }
 </script>
 
