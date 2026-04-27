@@ -3,99 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2DGP - 2D Game Platform</title>
+    <title>2DGP - Game Platform</title>
     <style>
-        :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #ffffff;
-            --accent-color: #00ff88;
-            --danger-color: #ff4444;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            display: flex;
-            transition: background 0.3s, font-family 0.3s;
-        }
-
-        /* Sidebar Navigation */
-        nav {
-            width: 240px;
-            height: 100vh;
-            background: #0a0a0a;
-            padding: 20px;
-            border-right: 1px solid #333;
-            position: fixed;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .logo { font-size: 28px; font-weight: 800; color: var(--accent-color); margin-bottom: 40px; letter-spacing: -1px; }
+        :root { --bg-color: #121212; --card-bg: #1e1e1e; --text-color: #ffffff; --accent-color: #00ff88; --danger-color: #ff4444; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; transition: 0.3s; }
         
-        .nav-item {
-            padding: 15px;
-            margin: 5px 0;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        /* Sidebar */
+        nav { width: 240px; height: 100vh; background: #0a0a0a; padding: 20px; border-right: 1px solid #333; position: fixed; display: flex; flex-direction: column; }
+        .logo { font-size: 28px; font-weight: 800; color: var(--accent-color); margin-bottom: 40px; }
+        .nav-item { padding: 15px; margin: 5px 0; cursor: pointer; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
         .nav-item:hover { background: #222; color: var(--accent-color); }
         .nav-item.active-nav { background: var(--accent-color); color: #000; font-weight: bold; }
 
         /* Main Content */
-        main {
-            margin-left: 280px;
-            padding: 40px;
-            width: calc(100% - 280px);
-        }
-
-        .view { display: none; animation: fadeIn 0.4s ease; }
+        main { margin-left: 280px; padding: 40px; width: calc(100% - 280px); }
+        .view { display: none; }
         .active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Auth UI */
+        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .auth-box { background: var(--card-bg); padding: 40px; border-radius: 20px; width: 320px; text-align: center; border: 1px solid #333; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #000; color: #fff; outline: none; }
+        input:focus { border-color: var(--accent-color); }
 
-        /* Auth Styles */
-        #auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 1000; display: flex; align-items: center; justify-content: center;
-        }
-        .auth-box { background: var(--card-bg); padding: 30px; border-radius: 15px; width: 350px; text-align: center; }
-        input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #444; background: #000; color: #fff; }
-
-        /* Game Grid */
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 25px;
-        }
-
-        .game-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid #333;
-            transition: 0.3s;
-        }
-        .game-card:hover { border-color: var(--accent-color); transform: translateY(-5px); }
-
-        .btn {
-            background: var(--accent-color); color: #000; border: none;
-            padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;
-        }
-        .btn-report { background: var(--danger-color); color: #fff; margin-top: 10px; font-size: 12px; }
-
+        /* Components */
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .game-card { background: var(--card-bg); padding: 20px; border-radius: 15px; border: 1px solid #333; }
+        .btn { background: var(--accent-color); color: #000; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+        .btn-secondary { background: transparent; color: #888; border: none; cursor: pointer; font-size: 14px; margin-top: 15px; }
+        textarea { width: 100%; height: 300px; background: #000; color: #0f0; border-radius: 10px; padding: 15px; font-family: monospace; }
         .online-dot { height: 10px; width: 10px; background-color: #00ff00; border-radius: 50%; display: inline-block; margin-right: 8px; }
-
-        /* Editor */
-        #gameCode { width: 100%; height: 400px; font-family: monospace; background: #000; color: #0f0; padding: 15px; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -103,18 +40,17 @@
 <div id="auth-overlay">
     <div class="auth-box">
         <h2 id="auth-title">Welcome to 2DGP</h2>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
-        <input type="text" id="username" placeholder="Username (Sign up only)">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password (Min. 6 chars)">
         <button class="btn" onclick="handleAuth()">Submit</button>
-        <p onclick="toggleAuthMode()" style="cursor:pointer; font-size: 14px; margin-top:15px; color: #888;">Switch Login/Signup</p>
+        <button class="btn-secondary" onclick="toggleAuthMode()">Don't have an account? Sign Up</button>
     </div>
 </div>
 
 <nav>
     <div class="logo">2DGP</div>
     <div class="nav-item active-nav" onclick="showView('home', this)">🏠 Home</div>
-    <div class="nav-item" onclick="showView('create', this)">🛠️ Create Game</div>
+    <div class="nav-item" onclick="showView('create', this)">🛠️ Create</div>
     <div class="nav-item" onclick="showView('mygames', this)">🎮 My Games</div>
     <div class="nav-item" onclick="showView('friends', this)">👥 Friends</div>
     <div class="nav-item" onclick="showView('settings', this)">⚙️ Settings</div>
@@ -123,166 +59,150 @@
 
 <main>
     <section id="home" class="view active">
-        <h1>Discover Games</h1>
+        <h1>Global Games</h1>
         <div class="game-grid">
-            <div class="game-card"><h3>Snake Classic</h3><p>Avoid the walls!</p><button class="btn">Play</button></div>
-            <div class="game-card"><h3>Tic Tac Toe</h3><p>3 in a row.</p><button class="btn">Play</button></div>
-            <div class="game-card"><h3>Pong</h3><p>Retro paddle action.</p><button class="btn">Play</button></div>
-            <div class="game-card"><h3>Breakout</h3><p>Smash the blocks.</p><button class="btn">Play</button></div>
-            <div class="game-card"><h3>Flappy Square</h3><p>Don't fall!</p><button class="btn">Play</button></div>
-            <div class="game-card"><h3>2048</h3><p>Math puzzle.</p><button class="btn">Play</button></div>
+            <div class="game-card"><h3>Snake</h3><button class="btn">Play</button></div>
+            <div class="game-card"><h3>Tic Tac Toe</h3><button class="btn">Play</button></div>
+            <div class="game-card"><h3>Pong</h3><button class="btn">Play</button></div>
+            <div class="game-card"><h3>Breakout</h3><button class="btn">Play</button></div>
+            <div class="game-card"><h3>Flappy Bird</h3><button class="btn">Play</button></div>
+            <div class="game-card"><h3>2048</h3><button class="btn">Play</button></div>
         </div>
     </section>
 
     <section id="create" class="view">
-        <h1>Game Editor</h1>
-        <p>Write your HTML/JS code below to publish your own game.</p>
-        <input type="text" id="newGameTitle" placeholder="Game Title">
-        <textarea id="gameCode" placeholder="<html>...your code here...</html>"></textarea><br><br>
-        <button class="btn" onclick="publishGame()">🚀 Publish to 2DGP</button>
+        <h1>Publish a Game</h1>
+        <input type="text" id="newGameTitle" placeholder="Game Name">
+        <textarea id="gameCode" placeholder="Paste your <html> code here..."></textarea>
+        <button class="btn" onclick="publishGame()">🚀 Publish</button>
     </section>
 
     <section id="mygames" class="view">
         <h1>Your Creations</h1>
-        <div id="user-games-list" class="game-grid">
-            <p>You haven't published any games yet.</p>
-        </div>
+        <div id="user-games-list" class="game-grid"></div>
     </section>
 
     <section id="friends" class="view">
-        <h1>Friends Online</h1>
+        <h1>Community</h1>
         <div id="friends-list">
-            <div class="game-card"><span class="online-dot"></span> <b>SystemAdmin</b> (Online)</div>
+            <p><span class="online-dot"></span> <b>SystemAdmin</b> (Online)</p>
         </div>
     </section>
 
     <section id="settings" class="view">
-        <h1>Platform Settings</h1>
+        <h1>Platform Appearance</h1>
         <div class="game-card">
-            <label>Background Color:</label><br>
-            <input type="color" id="bgPicker" value="#121212" onchange="applySettings()"><br><br>
-            
-            <label>Interface Font:</label><br>
-            <select id="fontPicker" onchange="applySettings()" style="width:100%; padding:10px; background:#000; color:#fff;">
-                <option value="'Segoe UI'">Modern (Default)</option>
-                <option value="'Courier New'">Retro Coding</option>
-                <option value="'Georgia'">Classic Serif</option>
-                <option value="Impact">Bold Impact</option>
+            <p>Background:</p><input type="color" id="bgPicker" value="#121212" onchange="applySettings()">
+            <p>Font Style:</p>
+            <select id="fontPicker" onchange="applySettings()" style="width:100%; padding:10px;">
+                <option value="'Segoe UI'">Modern</option>
+                <option value="'Courier New'">Retro</option>
+                <option value="Georgia">Classic</option>
             </select>
         </div>
     </section>
 </main>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-   const firebaseConfig = {
-  apiKey: "AIzaSyCPTMfSDrUa7-4GQZ1Z85uDm4ND_WVQR6I",
-  authDomain: "dgp-88a38.firebaseapp.com",
-  projectId: "dgp-88a38",
-  storageBucket: "dgp-88a38.firebasestorage.app", // Check this line!
-  messagingSenderId: "481321958468",
-  appId: "1:481321958468:web:28e2b88508beb8cb0c1011"
-};
+<script>
+    // 1. Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyCPTMfSDrUa7-4GQZ1Z85uDm4ND_WVQR6I",
+        authDomain: "dgp-88a38.firebaseapp.com",
+        projectId: "dgp-88a38",
+        appId: "1:481321958468:web:28e2b88508beb8cb0c1011"
+    };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
     let isSignUp = false;
 
-    // --- Auth Logic ---
-    window.toggleAuthMode = () => {
-        isSignUp = !isSignUp;
-        document.getElementById('auth-title').innerText = isSignUp ? "Create Account" : "Welcome Back";
-        document.getElementById('username').style.display = isSignUp ? "block" : "none";
-    };
-
-    window.handleAuth = async () => {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const username = document.getElementById('username').value;
-
-        try {
-            if (isSignUp) {
-                const res = await createUserWithEmailAndPassword(auth, email, password);
-                await setDoc(doc(db, "users", res.user.uid), { username, font: 'Segoe UI', bg: '#121212' });
-            } else {
-                await signInWithEmailAndPassword(auth, email, password);
-            }
-            document.getElementById('auth-overlay').style.display = 'none';
-        } catch (e) { alert(e.message); }
-    };
-
-    window.logout = () => signOut(auth).then(() => location.reload());
-
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            document.getElementById('auth-overlay').style.display = 'none';
-            loadUserGames();
-            // Load user custom settings
-            const docSnap = await getDoc(doc(db, "users", user.uid));
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                document.body.style.backgroundColor = data.bg;
-                document.body.style.fontFamily = data.font;
-            }
-        }
-    });
-
-    // --- Game Logic ---
-    window.publishGame = async () => {
-        const title = document.getElementById('newGameTitle').value;
-        const code = document.getElementById('gameCode').value;
-        if (!title || !code) return alert("Fill in title and code!");
-
-        await addDoc(collection(db, "games"), {
-            uid: auth.currentUser.uid,
-            author: auth.currentUser.email,
-            title: title,
-            code: code,
-            hearts: 0,
-            reports: 0
-        });
-        alert("Game Published!");
-        showView('mygames');
-        loadUserGames();
-    };
-
-    async function loadUserGames() {
-        const q = query(collection(db, "games"), where("uid", "==", auth.currentUser.uid));
-        const querySnapshot = await getDocs(q);
-        const container = document.getElementById('user-games-list');
-        container.innerHTML = "";
-        querySnapshot.forEach((gameDoc) => {
-            const data = gameDoc.data();
-            container.innerHTML += `
-                <div class="game-card">
-                    <h3>${data.title}</h3>
-                    <button class="btn">Edit</button>
-                    <button class="btn btn-report" onclick="deleteGame('${gameDoc.id}')">Delete</button>
-                </div>`;
-        });
-    }
-
-    window.deleteGame = async (id) => {
-        if(confirm("Delete this game?")) {
-            await deleteDoc(doc(db, "games", id));
-            loadUserGames();
-        }
-    };
-</script>
-
-<script>
-    // UI Navigation Logic
+    // 2. Navigation
     function showView(viewId, el) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
-        
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
         if(el) el.classList.add('active-nav');
+    }
+
+    function toggleAuthMode() {
+        isSignUp = !isSignUp;
+        document.getElementById('auth-title').innerText = isSignUp ? "Join 2DGP" : "Welcome Back";
+        document.querySelector('.btn-secondary').innerText = isSignUp ? "Have an account? Login" : "Don't have an account? Sign Up";
+    }
+
+    // 3. Username-Only Auth Logic
+    async function handleAuth() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        
+        if (!username || !password) return alert("Fill in all fields!");
+        if (password.length < 6) return alert("Password must be at least 6 chars!");
+
+        // Convert username to hidden email
+        const hiddenEmail = `${username.toLowerCase()}@2dgp.com`;
+
+        try {
+            if (isSignUp) {
+                const res = await auth.createUserWithEmailAndPassword(hiddenEmail, password);
+                await db.collection("users").doc(res.user.uid).set({
+                    username: username,
+                    bg: '#121212',
+                    font: 'Segoe UI'
+                });
+                alert("Account Created!");
+            } else {
+                await auth.signInWithEmailAndPassword(hiddenEmail, password);
+            }
+            document.getElementById('auth-overlay').style.display = 'none';
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
+    function logout() { auth.signOut().then(() => location.reload()); }
+
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            document.getElementById('auth-overlay').style.display = 'none';
+            const userDoc = await db.collection("users").doc(user.uid).get();
+            if (userDoc.exists) {
+                const data = userDoc.data();
+                document.body.style.backgroundColor = data.bg;
+                document.body.style.fontFamily = data.font;
+            }
+            loadUserGames();
+        }
+    });
+
+    // 4. Game Publishing
+    async function publishGame() {
+        const title = document.getElementById('newGameTitle').value;
+        const code = document.getElementById('gameCode').value;
+        if (!title || !code) return alert("Title and Code required!");
+
+        await db.collection("games").add({
+            uid: auth.currentUser.uid,
+            title: title,
+            code: code,
+            author: auth.currentUser.uid
+        });
+        alert("Game Published!");
+        loadUserGames();
+    }
+
+    async function loadUserGames() {
+        const snapshot = await db.collection("games").where("uid", "==", auth.currentUser.uid).get();
+        const container = document.getElementById('user-games-list');
+        container.innerHTML = "";
+        snapshot.forEach(doc => {
+            container.innerHTML += `<div class="game-card"><h3>${doc.data().title}</h3><button class="btn" style="background:#444; color:white">Delete</button></div>`;
+        });
     }
 
     function applySettings() {
@@ -290,9 +210,7 @@
         const font = document.getElementById('fontPicker').value;
         document.body.style.backgroundColor = bg;
         document.body.style.fontFamily = font;
-        // In a full build, you'd save these to Firestore here
     }
 </script>
-
 </body>
 </html>
