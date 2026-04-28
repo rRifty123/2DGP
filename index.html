@@ -140,7 +140,7 @@
             document.getElementById('auth-overlay').style.display = 'none';
         } catch (e) {
             console.error("Auth Error Details:", e);
-            alert(e.message);
+            alert(e.message); // This line was missing 'alert'
         }
     }
 
