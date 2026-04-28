@@ -5,33 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2DGP - Game Platform</title>
     <style>
-        :root { --bg-color: #121212; --card-bg: #1e1e1e; --text-color: #ffffff; --accent-color: #00ff88; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; overflow-x: hidden; }
+        :root { --bg-color: #0f0f0f; --card-bg: #1a1a1a; --text-color: #ffffff; --accent-color: #00ff88; --danger: #ff4444; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; display: flex; }
         
         /* Sidebar */
-        nav { width: 240px; height: 100vh; background: #0a0a0a; padding: 20px; border-right: 1px solid #333; position: fixed; display: flex; flex-direction: column; }
-        .logo { font-size: 28px; font-weight: 800; color: var(--accent-color); margin-bottom: 40px; }
-        .nav-item { padding: 15px; margin: 5px 0; cursor: pointer; border-radius: 8px; transition: 0.2s; }
-        .nav-item:hover { background: #222; color: var(--accent-color); }
-        .active-nav { background: var(--accent-color); color: #000; font-weight: bold; }
+        nav { width: 240px; height: 100vh; background: #050505; padding: 20px; border-right: 1px solid #333; position: fixed; display: flex; flex-direction: column; z-index: 100; }
+        .logo { font-size: 28px; font-weight: 800; color: var(--accent-color); margin-bottom: 40px; letter-spacing: -1px; }
+        .nav-item { padding: 15px; margin: 5px 0; cursor: pointer; border-radius: 10px; transition: 0.2s; color: #888; font-weight: 500; }
+        .nav-item:hover { background: #1a1a1a; color: #fff; }
+        .active-nav { background: var(--accent-color); color: #000 !important; font-weight: bold; }
 
-        /* Main Content */
-        main { margin-left: 280px; padding: 40px; width: calc(100% - 280px); }
-        .view { display: none; }
+        /* Main Layout */
+        main { margin-left: 280px; padding: 40px; width: calc(100% - 320px); }
+        .view { display: none; animation: fadeIn 0.3s ease; }
         .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Auth UI */
-        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        /* Search & Headers */
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .search-bar { background: #1a1a1a; border: 1px solid #333; padding: 12px; border-radius: 8px; color: white; width: 300px; outline: none; }
+
+        /* Cards & Grid */
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .game-card { background: var(--card-bg); border-radius: 15px; border: 1px solid #333; overflow: hidden; transition: 0.3s; position: relative; }
+        .game-card:hover { transform: translateY(-5px); border-color: var(--accent-color); }
+        .card-content { padding: 20px; }
+        .card-actions { display: flex; gap: 10px; padding: 15px; background: rgba(0,0,0,0.3); border-top: 1px solid #333; }
+
+        /* Buttons */
+        .btn { background: var(--accent-color); color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn-small { padding: 5px 10px; font-size: 12px; border-radius: 5px; border: 1px solid #444; background: #222; color: #ccc; cursor: pointer; }
+        .btn-small:hover { background: #333; color: white; }
+        .btn-danger { color: var(--danger); }
+
+        /* Auth Overlay */
+        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
         .auth-box { background: var(--card-bg); padding: 40px; border-radius: 20px; width: 320px; text-align: center; border: 1px solid #333; }
-        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #000; color: #fff; outline: none; }
-        input:focus { border-color: var(--accent-color); }
+        input[type="text"], input[type="password"] { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #000; color: #fff; }
 
-        /* Components */
-        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
-        .game-card { background: var(--card-bg); padding: 20px; border-radius: 15px; border: 1px solid #333; }
-        .btn { background: var(--accent-color); color: #000; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
-        .btn-secondary { background: transparent; color: #888; border: none; cursor: pointer; margin-top: 15px; font-size: 14px; }
-        textarea { width: 100%; height: 300px; background: #000; color: #0f0; border-radius: 10px; padding: 15px; font-family: monospace; border: 1px solid #333; }
+        /* Profile */
+        .profile-header { display: flex; align-items: center; gap: 20px; background: #1a1a1a; padding: 30px; border-radius: 20px; margin-bottom: 30px; }
+        .avatar { width: 80px; height: 80px; background: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #000; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -40,50 +54,64 @@
     <div class="auth-box">
         <h2 id="auth-title">Welcome to 2DGP</h2>
         <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password (Min. 6 chars)">
-        <button class="btn" onclick="handleAuth()">Submit</button>
-        <button class="btn-secondary" id="auth-toggle-btn" onclick="toggleAuthMode()">Don't have an account? Sign Up</button>
+        <input type="password" id="password" placeholder="Password">
+        <button class="btn" onclick="handleAuth()" style="width:100%">Continue</button>
+        <button class="btn-secondary" id="auth-toggle-btn" onclick="toggleAuthMode()" style="background:none; border:none; color:#888; margin-top:15px; cursor:pointer;">New here? Sign Up</button>
     </div>
 </div>
 
 <nav>
     <div class="logo">2DGP</div>
     <div class="nav-item active-nav" onclick="showView('home', this)">🏠 Home</div>
+    <div class="nav-item" onclick="showView('community', this)">🌐 Community Games</div>
     <div class="nav-item" onclick="showView('create', this)">🛠️ Create</div>
-    <div class="nav-item" onclick="showView('mygames', this)">🎮 My Games</div>
+    <div class="nav-item" onclick="showView('profile', this)">👤 Profile & Friends</div>
     <div class="nav-item" onclick="showView('settings', this)">⚙️ Settings</div>
     <div style="margin-top:auto" class="nav-item" onclick="logout()">🚪 Logout</div>
 </nav>
 
 <main>
     <section id="home" class="view active">
-        <h1>Global Games</h1>
+        <div class="header-row"><h1>Featured Games</h1></div>
         <div class="game-grid">
-            <div class="game-card"><h3>Snake</h3><button class="btn">Play</button></div>
-            <div class="game-card"><h3>Pong</h3><button class="btn">Play</button></div>
-            <div class="game-card"><h3>Breakout</h3><button class="btn">Play</button></div>
+            <div class="game-card"><div class="card-content"><h3>Snake Classic</h3><p>By System</p><button class="btn" onclick="playSystemGame('snake')">Play Now</button></div></div>
         </div>
     </section>
 
-    <section id="create" class="view">
-        <h1>Publish a Game</h1>
-        <input type="text" id="newGameTitle" placeholder="Game Name">
-        <textarea id="gameCode" placeholder="Paste your HTML/CSS/JS code here..."></textarea>
-        <button class="btn" onclick="publishGame()">🚀 Publish</button>
+    <section id="community" class="view">
+        <div class="header-row">
+            <h1>Community Games</h1>
+            <input type="text" class="search-bar" id="gameSearch" placeholder="Search games..." onkeyup="searchGames()">
+        </div>
+        <div id="community-games-list" class="game-grid"></div>
     </section>
 
-    <section id="mygames" class="view">
-        <h1>Your Creations</h1>
-        <div id="user-games-list" class="game-grid">
-            <p style="color: #666;">No games published yet.</p>
+    <section id="create" class="view">
+        <h1>Publish to 2DGP</h1>
+        <input type="text" id="newGameTitle" placeholder="Game Name" style="width:100%; margin-bottom:10px; padding:12px; background:#1a1a1a; border:1px solid #333; color:white; border-radius:8px;">
+        <textarea id="gameCode" placeholder="Paste your HTML/JS code here..." style="width:100%; height:400px; background:#000; color:#0f0; border-radius:10px; padding:15px; font-family:monospace; border:1px solid #333;"></textarea>
+        <button class="btn" onclick="publishGame()" style="margin-top:20px;">🚀 Global Release</button>
+    </section>
+
+    <section id="profile" class="view">
+        <div class="profile-header">
+            <div class="avatar" id="user-initial">?</div>
+            <div>
+                <h2 id="display-name" style="margin:0">Username</h2>
+                <p style="color:#888; margin:5px 0;">Developer Member</p>
+            </div>
+        </div>
+        <h3>Friends List</h3>
+        <div id="friends-list" class="game-card" style="padding:20px;">
+            <p style="color:#666">You haven't added any friends yet.</p>
         </div>
     </section>
 
     <section id="settings" class="view">
-        <h1>Settings</h1>
-        <div class="game-card">
-            <p>Theme Background Color:</p>
-            <input type="color" id="bgPicker" value="#121212" onchange="applySettings()">
+        <h1>Account Settings</h1>
+        <div class="game-card" style="padding:20px;">
+            <p>UI Accent Color:</p>
+            <input type="color" onchange="document.documentElement.style.setProperty('--accent-color', this.value)" value="#00ff88">
         </div>
     </section>
 </main>
@@ -93,7 +121,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-    // 1. Firebase Configuration
     const firebaseConfig = {
         apiKey: "AIzaSyCPTMfSDrUa7-4GQZ1Z85uDm4ND_WVQR6I",
         authDomain: "dgp-88a38.firebaseapp.com",
@@ -101,133 +128,125 @@
         appId: "1:481321958468:web:28e2b88508beb8cb0c1011"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // 2. Global State
     let isSignUp = false;
+    let allGames = [];
 
-    // 3. UI Functions
     function toggleAuthMode() {
         isSignUp = !isSignUp;
-        document.getElementById('auth-title').innerText = isSignUp ? "Join 2DGP" : "Welcome Back";
-        document.getElementById('auth-toggle-btn').innerText = isSignUp ? "Have an account? Login" : "Don't have an account? Sign Up";
+        document.getElementById('auth-title').innerText = isSignUp ? "Create Account" : "Welcome Back";
+        document.getElementById('auth-toggle-btn').innerText = isSignUp ? "Already have one? Login" : "New here? Sign Up";
     }
 
     function showView(viewId, el) {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
-        if(el) el.classList.add('active-nav');
+        el.classList.add('active-nav');
     }
 
-    // 4. Core Authentication Logic
     async function handleAuth() {
-        const username = document.getElementById('username').value.trim();
-        const password = document.getElementById('password').value;
-        
-        if (!username || !password) return alert("Please fill in all fields!");
-        if (password.length < 6) return alert("Password must be at least 6 characters!");
-
-        // Format username to a valid email format for Firebase
-        const cleanEmail = username.toLowerCase().replace(/[^a-z0-9]/g, '') + "@2dgp.com";
+        const userVal = document.getElementById('username').value.trim();
+        const passVal = document.getElementById('password').value;
+        const fakeEmail = userVal.toLowerCase().replace(/\s/g, '') + "@2dgp.com";
 
         try {
             if (isSignUp) {
-                // Sign Up Path
-                const res = await auth.createUserWithEmailAndPassword(cleanEmail, password);
-                await db.collection("users").doc(res.user.uid).set({
-                    username: username,
-                    bg: '#121212',
-                    createdAt: new Date()
-                });
-                alert("Account created successfully!");
+                const res = await auth.createUserWithEmailAndPassword(fakeEmail, passVal);
+                await db.collection("users").doc(res.user.uid).set({ username: userVal });
             } else {
-                // Login Path
-                await auth.signInWithEmailAndPassword(cleanEmail, password);
+                await auth.signInWithEmailAndPassword(fakeEmail, passVal);
             }
-            document.getElementById('auth-overlay').style.display = 'none';
-        } catch (e) {
-            console.error("Auth Error Details:", e);
-            alert("Firebase Error: " + e.message);
-        }
+        } catch (e) { alert(e.message); }
     }
 
-    // Auth Observer (Checks if user is already logged in)
-    auth.onAuthStateChanged((user) => {
+    auth.onAuthStateChanged(async (user) => {
         if (user) {
             document.getElementById('auth-overlay').style.display = 'none';
-            loadUserGames();
-        } else {
-            document.getElementById('auth-overlay').style.display = 'flex';
+            const doc = await db.collection("users").doc(user.uid).get();
+            const name = doc.data()?.username || "Player";
+            document.getElementById('display-name').innerText = name;
+            document.getElementById('user-initial').innerText = name[0].toUpperCase();
+            loadCommunityGames();
         }
     });
 
-    function logout() {
-        auth.signOut().then(() => {
-            location.reload();
+    async function publishGame() {
+        const title = document.getElementById('newGameTitle').value;
+        const code = document.getElementById('gameCode').value;
+        if(!title || !code) return alert("Missing Info");
+
+        await db.collection("games").add({
+            title: title,
+            code: code,
+            author: document.getElementById('display-name').innerText,
+            likes: 0,
+            dislikes: 0,
+            timestamp: Date.now()
+        });
+        alert("Game Published to Community!");
+        loadCommunityGames();
+        showView('community', document.querySelectorAll('.nav-item')[1]);
+    }
+
+    async function loadCommunityGames() {
+        const snap = await db.collection("games").orderBy("timestamp", "desc").get();
+        allGames = [];
+        const container = document.getElementById('community-games-list');
+        container.innerHTML = "";
+        
+        snap.forEach(doc => {
+            const data = doc.data();
+            data.id = doc.id;
+            allGames.push(data);
+            renderGameCard(data, container);
         });
     }
 
-    // 5. Game Database Logic
-    async function publishGame() {
-        const title = document.getElementById('newGameTitle').value.trim();
-        const code = document.getElementById('gameCode').value.trim();
-        
-        if (!title || !code) return alert("Please enter a game name and code!");
-
-        try {
-            await db.collection("games").add({
-                uid: auth.currentUser.uid,
-                title: title,
-                code: code,
-                timestamp: new Date()
-            });
-            alert("Game Published!");
-            document.getElementById('newGameTitle').value = "";
-            document.getElementById('gameCode').value = "";
-            loadUserGames();
-            showView('mygames', document.querySelectorAll('.nav-item')[2]);
-        } catch (e) {
-            alert("Error publishing: " + e.message);
-        }
+    function renderGameCard(data, container) {
+        container.innerHTML += `
+            <div class="game-card">
+                <div class="card-content">
+                    <h3 style="margin:0">${data.title}</h3>
+                    <p style="color:#666; font-size:13px">Dev: ${data.author}</p>
+                    <button class="btn" style="width:100%" onclick="playGame('${data.id}')">Play Game</button>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-small" onclick="social('${data.id}', 'likes')">👍 ${data.likes || 0}</button>
+                    <button class="btn-small" onclick="social('${data.id}', 'dislikes')">👎 ${data.dislikes || 0}</button>
+                    <button class="btn-small btn-danger" style="margin-left:auto" onclick="reportGame('${data.id}')">🚩 Report</button>
+                </div>
+            </div>`;
     }
 
-    async function loadUserGames() {
-        if (!auth.currentUser) return;
-        
-        try {
-            const snapshot = await db.collection("games")
-                                     .where("uid", "==", auth.currentUser.uid)
-                                     .get();
-            const container = document.getElementById('user-games-list');
-            container.innerHTML = "";
-            
-            if (snapshot.empty) {
-                container.innerHTML = '<p style="color: #666;">No games published yet.</p>';
-                return;
-            }
-
-            snapshot.forEach(doc => {
-                container.innerHTML += `
-                    <div class="game-card">
-                        <h3>${doc.data().title}</h3>
-                        <p style="color: #00ff88; font-size: 12px;">Status: Live</p>
-                        <button class="btn" style="background: #333; color: white;">Manage</button>
-                    </div>`;
-            });
-        } catch (e) {
-            console.log("Error loading games:", e);
-        }
+    function searchGames() {
+        const term = document.getElementById('gameSearch').value.toLowerCase();
+        const container = document.getElementById('community-games-list');
+        container.innerHTML = "";
+        allGames.filter(g => g.title.toLowerCase().includes(term)).forEach(g => renderGameCard(g, container));
     }
 
-    function applySettings() {
-        const bg = document.getElementById('bgPicker').value;
-        document.body.style.backgroundColor = bg;
+    function playGame(id) {
+        const game = allGames.find(g => g.id === id);
+        const win = window.open("", "_blank");
+        win.document.write(game.code);
+        win.document.close();
     }
+
+    async function social(id, type) {
+        const ref = db.collection("games").doc(id);
+        await ref.update({ [type]: firebase.firestore.FieldValue.increment(1) });
+        loadCommunityGames();
+    }
+
+    function reportGame(id) {
+        alert("Game ID: " + id + " has been reported to staff.");
+    }
+
+    function logout() { auth.signOut().then(() => location.reload()); }
 </script>
-
 </body>
 </html>
