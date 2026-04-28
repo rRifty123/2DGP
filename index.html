@@ -88,9 +88,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-    // 1. CLEAN CONFIG
+   // CLEAN CONFIG - VERIFY THESE NUMBERS!
     const firebaseConfig = {
-        apiKey: "AIzaSyCPTMfSDrUa7-4GQZ1Z85uDm4ND_WVQR6I",
+        apiKey: "AIzaSyCPTMfSDrUa7-4GQZ1Z85uDm4ND_WVQR6I", 
         authDomain: "dgp-88a38.firebaseapp.com",
         projectId: "dgp-88a38",
         appId: "1:481321958468:web:28e2b88508beb8cb0c1011"
@@ -100,19 +100,33 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    let isSignUp = false;
+    async function handleAuth() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        
+        if (!username || !password) return alert("Please enter both!");
 
-    function toggleAuthMode() {
-        isSignUp = !isSignUp;
-        document.getElementById('auth-title').innerText = isSignUp ? "Join 2DGP" : "Welcome Back";
-        document.getElementById('auth-toggle-btn').innerText = isSignUp ? "Have an account? Login" : "Don't have an account? Sign Up";
-    }
+        // The "Clean Email" logic
+        const cleanEmail = username.toLowerCase().replace(/[^a-z0-9]/g, '') + "@2dgp.com";
+        
+        console.log("Attempting login with:", cleanEmail); // Debugging
 
-    function showView(viewId, el) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(viewId).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
-        el.classList.add('active-nav');
+        try {
+            if (isSignUp) {
+                await auth.createUserWithEmailAndPassword(cleanEmail, password);
+                await db.collection("users").doc(auth.currentUser.uid).set({
+                    username: username,
+                    created: new Date()
+                });
+                alert("Account Created!");
+            } else {
+                await auth.signInWithEmailAndPassword(cleanEmail, password);
+            }
+            document.getElementById('auth-overlay').style.display = 'none';
+        } catch (e) {
+            console.error("FULL ERROR OBJECT:", e);
+            alert("Error: " + e.message);
+        }
     }
 
     // 2. FIXED AUTH LOGIC
