@@ -363,15 +363,8 @@
 </main>
 
 <script>
-    // --- APP CORE INITIALIZATION HANDLERS & DATABASE BINDINGS ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyCPTMfSDrUa7-4GQZ1Z85uDm4ND_WVQR6I",
-        authDomain: "dgp-88a38.firebaseapp.com",
-        projectId: "dgp-88a38",
-        appId: "1:481321958468:web:28e2b88508beb8cb0c1011"
-    };
-
-    // Global variables initialization framework configurations
+    // --- GLOBAL DATABASE & AUTH DEFINITIONS ---
+    let auth, db;
     let isSignUp = false;
     let cachedUser = null;
     let editingGameId = null;
@@ -384,16 +377,42 @@
     let r6Scene, r6Camera, r6Renderer, r6GroupInstance;
     let activePlayScene, activePlayCamera, activePlayRenderer, playerMeshGroup;
 
-    // Initialize scripts matrix logic dynamically
+    const firebaseConfig = {
+        apiKey: "AIzaSyCPTMfSDrUa7-4GQZ1Z85uDm4ND_WVQR6I",
+        authDomain: "dgp-88a38.firebaseapp.com",
+        projectId: "dgp-88a38",
+        appId: "1:481321958468:web:28e2b88508beb8cb0c1011"
+    };
+
+    // Initialize scripts matrix logic dynamically on load
     window.addEventListener('DOMContentLoaded', () => {
-        // Safe load bindings check checks wrapper execution hook points
         if (typeof firebase !== 'undefined') {
             firebase.initializeApp(firebaseConfig);
             auth = firebase.auth();
             db = firebase.firestore();
             setupAuthObserver();
+        } else {
+            console.error("Firebase SDK failed to load. Check your internet connection or script tags.");
         }
     });
+
+    function setupAuthObserver() {
+        auth.onAuthStateChanged(async user => {
+            if (user) {
+                document.getElementById('auth-overlay').style.display = 'none';
+                const doc = await db.collection("users").doc(user.uid).get();
+                cachedUser = doc.data();
+                document.getElementById('my-profile-name').innerText = cachedUser.username;
+                
+                loadUserStudioMatrix();
+                renderArcadeRooms();
+                syncRelationshipMatrix();
+                bootupProfileR6Model();
+            } else {
+                document.getElementById('auth-overlay').style.display = 'flex';
+            }
+        });
+    }
 
     function setupAuthObserver() {
         auth.onAuthStateChanged(async user => {
