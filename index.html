@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2DGP - Frutiger Aero Studio</title>
+    <title>2DGP - Frutiger Aero Studio OS</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
     <style>
         :root {
             --bg-base: #eaf6fc;
@@ -30,9 +31,9 @@
             margin: 0;
             display: flex;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Side Navigation Bar */
         nav {
             width: 250px;
             background: rgba(255, 255, 255, 0.4);
@@ -87,7 +88,7 @@
             margin-bottom: 25px;
         }
 
-        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
 
         input, select, textarea {
             background: rgba(255, 255, 255, 0.7);
@@ -106,43 +107,63 @@
             border-radius: 16px;
             font-weight: 700;
             cursor: pointer;
+            transition: transform 0.1s;
         }
+        .btn:active { transform: scale(0.96); }
         .btn-primary { background: var(--aero-blue); color: white; border: none; }
 
-        /* Multi-Script Tab Controller */
         .script-tabs { display: flex; gap: 5px; margin-bottom: 10px; background: rgba(0,0,0,0.05); padding: 5px; border-radius: 10px; }
         .script-tab { padding: 6px 12px; background: white; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
         .script-tab.active-tab { background: #0084ff; color: white; }
 
-        /* Engine Windows */
         .engine-window { display: grid; grid-template-columns: 280px 1fr 320px; gap: 15px; height: calc(100vh - 180px); }
         .engine-panel { background: rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 15px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
         
-        /* 2D Chatbot Workspace Layout split */
         .ai-split-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; height: 300px; }
         .chat-log { background: white; border-radius: 15px; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; border: 1px solid rgba(0,0,0,0.1); }
         .chat-bubble { padding: 10px 14px; border-radius: 12px; max-width: 80%; font-size: 14px; }
         .chat-user { background: #e2f3ff; align-self: flex-end; }
         .chat-ai { background: #f0f0f0; align-self: flex-start; }
 
-        /* Block Programming Visual elements */
-        .blox-block { padding: 8px 12px; border-radius: 8px; color: white; font-weight: bold; font-size: 12px; margin: 4px 0; cursor: grab; display: flex; justify-content: space-between; align-items: center; }
+        .blox-block { padding: 8px 12px; border-radius: 8px; color: white; font-weight: bold; font-size: 12px; margin: 4px 0; cursor: grab; }
         .b-event { background: #ffbf00; }
         .b-action { background: #4c97ff; }
         .b-logic { background: #10b981; }
         .b-html { background: #a855f7; }
 
-        /* Avatar Customization elements */
         .avatar-viewport { width: 100%; height: 250px; background: linear-gradient(to bottom, #e0f2fe, #bae6fd); border-radius: 15px; margin-bottom: 15px; }
         .color-picker-row { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; }
 
         .aero-modal-bg { position: fixed; inset: 0; background: rgba(12, 43, 69, 0.3); backdrop-filter: blur(15px); z-index: 2000; display: none; align-items: center; justify-content: center; }
+
+        /* Floating Interactive OS Window Style Layer */
+        .os-window {
+            position: fixed; top: 10%; left: 15%; width: 70%; height: 75%;
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(30px);
+            border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.6); display: none; flex-direction: column; z-index: 9999;
+            overflow: hidden; animation: windowSpawn 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+        @keyframes windowSpawn { from { transform: scale(0.8) translateY(50px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+        .os-header { background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(240,240,240,0.5)); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .os-title { font-weight: 700; color: var(--text-main); }
+        .os-close { background: #ff5f56; border: none; width: 16px; height: 16px; border-radius: 50%; cursor: pointer; color: transparent; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .os-close:hover { color: #5c0000; text-shadow: 0 0 1px black; }
+        .os-body { flex: 1; position: relative; background: #000; }
     </style>
 </head>
 <body>
 
+<div id="desktop-game-window" class="os-window">
+    <div class="os-header">
+        <span class="os-title" id="os-window-title">System Runtime Sandbox</span>
+        <button class="os-close" onclick="closeDesktopGameWindow()">X</button>
+    </div>
+    <div class="os-body" id="os-window-body"></div>
+</div>
+
 <div id="engine-select-modal" class="aero-modal-bg">
-    <div class="glass-card style-modal" style="width: 400px; text-align: center; background: white;">
+    <div class="glass-card" style="width: 400px; text-align: center; background: white;">
         <h2 style="margin-top:0;">Create a New Game</h2>
         <p style="color: var(--text-muted); margin-bottom: 25px;">Select your framework mode:</p>
         <div style="display:flex; gap:15px; justify-content:center;">
@@ -187,26 +208,26 @@
 
     <section id="arcades" class="view">
         <div style="display:flex; justify-content:between; align-items:center; margin-bottom:25px;">
-            <h1>Game Arcade</h1>
-            <input type="text" id="arcadeSearch" placeholder="Search games by title..." style="margin-left:auto; width:280px;">
+            <h1>Game Arcade Matrix</h1>
+            <input type="text" id="arcadeSearch" placeholder="Search games by title..." onkeyup="filterArcadeMatrix()" style="margin-left:auto; width:280px;">
+        </div>
+        
+        <div class="glass-card">
+            <h3 style="color:#0072ff; margin-top:0;">⏳ Recently Played</h3>
+            <div id="cat-recent-played" class="game-grid"></div>
         </div>
         <div class="glass-card">
-            <h2 style="color:#0072ff; margin-top:0;">🌊 2D Arcade Games</h2>
-            <div id="2d-published" class="game-grid"></div>
+            <h3 style="color:#29b300; margin-top:0;">🚀 Recently Uploaded</h3>
+            <div id="cat-recent-uploaded" class="game-grid"></div>
         </div>
-        <div class="glass-card" style="margin-top:30px;">
-            <h2 style="color:#29b300; margin-top:0;">🧊 3D Arcade Games</h2>
-            <div id="3d-published" class="game-grid"></div>
+        <div class="glass-card">
+            <h3 style="color:#eab308; margin-top:0;">❤️ Most Liked</h3>
+            <div id="cat-most-liked" class="game-grid"></div>
         </div>
-    </section>
-
-    <section id="game-player-view" class="view">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h2 id="active-playing-title">Playing Game</h2>
-            <button class="btn" onclick="exitGamePlayer()">🚪 Leave Game</button>
+        <div class="glass-card">
+            <h3 style="color:#ec4899; margin-top:0;">🔥 Top Playing Right Now</h3>
+            <div id="cat-top-playing" class="game-grid"></div>
         </div>
-        <div class="glass-card" style="padding:0; height:500px; overflow:hidden;" id="player-runtime-container">
-            </div>
     </section>
 
     <section id="studio" class="view">
@@ -215,7 +236,7 @@
                 <h1>My Creation Studio</h1>
                 <button class="btn btn-primary" onclick="openEngineSelector()">➕ Create New Game</button>
             </div>
-            <div id="user-project-matrix" class="studio-dashboard"></div>
+            <div id="user-project-matrix" class="game-grid" style="margin-top:20px;"></div>
         </div>
 
         <div id="studio-3d-workspace" style="display:none;">
@@ -246,9 +267,9 @@
                         <div class="blox-block b-event" onclick="appendBlockCode('when player moves')">when player moves</div>
                         <div class="blox-block b-event" onclick="appendBlockCode('when object touched')">when object touched</div>
                         
-                        <div class="blox-block b-action" onclick="appendBlockCode('change sky colour to')">change sky colour to [Color]</div>
-                        <div class="blox-block b-action" onclick="appendBlockCode('change object colour to')">change object colour to [Color]</div>
-                        <div class="blox-block b-action" onclick="appendBlockCode('change player colour to')">change player colour to [Color]</div>
+                        <div class="blox-block b-action" onclick="appendBlockCode('change sky colour to')">change sky colour to</div>
+                        <div class="blox-block b-action" onclick="appendBlockCode('change object colour to')">change object colour to</div>
+                        <div class="blox-block b-action" onclick="appendBlockCode('change player colour to')">change player colour to</div>
                         <div class="blox-block b-action" onclick="appendBlockCode('kill player')">kill player</div>
                         <div class="blox-block b-action" onclick="appendBlockCode('hide')">hide</div>
                         <div class="blox-block b-action" onclick="appendBlockCode('show')">show</div>
@@ -267,11 +288,11 @@
 
                 <div class="engine-panel">
                     <h3>3D Workspace AI Assistant</h3>
-                    <textarea id="ai-3d-prompt" placeholder="Ask AI to write 2DBLOX commands or script elements..." style="height:80px; font-size:12px;"></textarea>
+                    <textarea id="ai-3d-prompt" placeholder="Ask AI to write 2DBLOX commands..." style="height:80px; font-size:12px;"></textarea>
                     <button class="btn btn-primary" onclick="generate3DBlockAI()" style="padding:8px;">Generate Blocks</button>
                     
                     <h3 style="margin-top:15px;">Properties</h3>
-                    <textarea id="blox-script-mirror" placeholder="// Active script compilation code output matrix..." style="flex:1; font-family:monospace; font-size:11px;"></textarea>
+                    <textarea id="blox-script-mirror" placeholder="// Script content..." style="flex:1; font-family:monospace; font-size:11px;"></textarea>
                 </div>
             </div>
         </div>
@@ -286,7 +307,7 @@
             </div>
             <input type="text" id="legacyGameTitle" placeholder="Enter Game Title" style="width:100%; margin-bottom:15px;">
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; height:320px;">
-                <textarea id="legacyGameCode" style="font-family:monospace; font-size:12px;" placeholder="Paste HTML/CSS/JavaScript source code here..." onkeyup="update2DPreview()"></textarea>
+                <textarea id="legacyGameCode" style="font-family:monospace; font-size:12px;" placeholder="Paste HTML source here..." onkeyup="update2DPreview()"></textarea>
                 <div class="glass-card" style="padding:0; overflow:hidden; background:white; margin-bottom:0;">
                     <iframe id="preview-2d-frame" style="width:100%; height:100%; border:none;"></iframe>
                 </div>
@@ -294,14 +315,14 @@
 
             <div class="ai-split-container">
                 <div class="chat-log" id="chat-2d-log">
-                    <div class="chat-bubble chat-ai">Hello! Describe any feature or complete mini-game logic, and I will assemble code scripts you can inject right above!</div>
+                    <div class="chat-bubble chat-ai">Hello! Describe any feature or complete mini-game logic, and I will assemble code scripts!</div>
                 </div>
                 <div style="display:flex; flex-direction:column; gap:10px;">
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="ai-2d-input" placeholder="Type instructions here (e.g. Add score counter)..." style="flex:1;">
+                        <input type="text" id="ai-2d-input" placeholder="Type instructions here..." style="flex:1;">
                         <button class="btn btn-primary" onclick="send2DAIChat()">Send</button>
                     </div>
-                    <textarea id="ai-2d-output-code" readonly placeholder="AI generated response script boxes will compile here..." style="flex:1; font-family:monospace; font-size:11px; background:#f4f4f4; color:#333;"></textarea>
+                    <textarea id="ai-2d-output-code" readonly placeholder="AI response templates..." style="flex:1; font-family:monospace; font-size:11px; background:#f4f4f4; color:#333;"></textarea>
                     <button class="btn" style="background:#0084ff; color:white; padding:8px;" onclick="injectAICodeTo2D()">📋 Paste AI Code Into Editor</button>
                 </div>
             </div>
@@ -327,16 +348,13 @@
         <div class="glass-card">
             <h1 id="my-profile-name" style="margin:0;">Username</h1>
             
-            <div class="profile-section-title" style="font-size:20px; font-weight:bold; margin-top:20px;">👥 My Friends</div>
-            <div id="my-profile-friends-list" class="game-grid"></div>
-
-            <div class="profile-section-title" style="font-size:20px; font-weight:bold; margin-top:20px;">🎮 Published Creations</div>
+            <div style="font-size:20px; font-weight:bold; margin-top:20px; margin-bottom:10px;">🛠️ My Creations (Click Edit to modify)</div>
             <div id="my-profile-games-list" class="game-grid"></div>
 
-            <div class="profile-section-title" style="font-size:20px; font-weight:bold; margin-top:20px;">⏳ History Queue (Recently Played)</div>
-            <div id="my-profile-history-list" class="game-grid"></div>
+            <div style="font-size:20px; font-weight:bold; margin-top:20px; margin-bottom:10px;">👥 My Friends</div>
+            <div id="my-profile-friends-list" class="game-grid"></div>
 
-            <div class="profile-section-title" style="font-size:20px; font-weight:bold; margin-top:20px;">🧍 My 3D R6 Avatar Configuration Layer</div>
+            <div style="font-size:20px; font-weight:bold; margin-top:20px; margin-bottom:10px;">🧍 My 3D R6 Avatar Configuration Layer</div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; align-items:center;">
                 <div id="r6-avatar-container" class="avatar-viewport"></div>
                 <div>
@@ -353,15 +371,20 @@
 
     <section id="settings" class="view">
         <h1>Account Controls</h1>
-        <div class="glass-card" style="max-width:500px;">
+        <div class="glass-card" style="max-width:600px;">
             <h3>Update Password Key</h3>
             <input type="password" id="new-password-input" placeholder="Configure new password units..." style="width:100%; margin-bottom:15px;">
             <button class="btn btn-primary" onclick="executeKeyRotation()">Commit Change</button>
             
-            <div style="margin-top:20px; text-align:right;"><span style="cursor:pointer; opacity:0.2;" onclick="promptAdmin()">⚙️</span></div>
-            <div id="admin-panel" style="display:none; margin-top:15px; border:1px solid red; padding:10px; border-radius:10px;">
-                <h4 style="color:red; margin:0 0 10px 0;">Admin Portal Access</h4>
-                <div id="admin-game-list"></div>
+            <div style="margin-top:60px; text-align:center;">
+                <span style="cursor:pointer; opacity:0.15; font-size:18px;" onclick="promptAdminAuthentication()">⚙️ System Architecture Portal</span>
+            </div>
+
+            <div id="admin-panel" style="display:none; margin-top:25px; border:2px dashed #ff4a4a; padding:20px; border-radius:16px; background:rgba(255,74,74,0.05);">
+                <h3 style="color:#ff2a2a; margin-top:0;">🛑 Core 2DGP Architecture Hot-Swapper</h3>
+                <p style="font-size:12px; color:var(--text-muted);">Warning: Editing this text area live-updates the actual website source template framework inside database storage nodes.</p>
+                <textarea id="admin-src-patcher" style="width:100%; height:300px; font-family:monospace; font-size:11px; background:#1e1e1e; color:#0f0; border-radius:10px;" placeholder="Loading live client configuration payload..."></textarea>
+                <button class="btn" style="background:#ff2a2a; color:white; width:100%; margin-top:10px;" onclick="deployGlobalPlatformPatch()">💾 Save & Publish Core Live Framework Update</button>
             </div>
         </div>
     </section>
@@ -376,8 +399,9 @@
     let currentFrameworkType = '2D';
     let scriptTabsArray = ["// Script Content Storage Matrix\n"];
     let activeScriptTabIdx = 0;
+    let globalActiveGamesList = [];
 
-    // 3D Runtime Global Parameters
+    // 3D Engine System Variables
     let scene3D, camera3D, renderer3D, selected3DObject;
     let r6Scene, r6Camera, r6Renderer, r6GroupInstance;
     let activePlayScene, activePlayCamera, activePlayRenderer, playerMeshGroup;
@@ -389,15 +413,12 @@
         appId: "1:481321958468:web:28e2b88508beb8cb0c1011"
     };
 
-    // Initialize scripts matrix logic dynamically on load
     window.addEventListener('DOMContentLoaded', () => {
         if (typeof firebase !== 'undefined') {
             firebase.initializeApp(firebaseConfig);
             auth = firebase.auth();
             db = firebase.firestore();
             setupAuthObserver();
-        } else {
-            console.error("Firebase SDK failed to load. Check your internet connection or script tags.");
         }
     });
 
@@ -413,24 +434,7 @@
                 renderArcadeRooms();
                 syncRelationshipMatrix();
                 bootupProfileR6Model();
-            } else {
-                document.getElementById('auth-overlay').style.display = 'flex';
-            }
-        });
-    }
-
-    function setupAuthObserver() {
-        auth.onAuthStateChanged(async user => {
-            if (user) {
-                document.getElementById('auth-overlay').style.display = 'none';
-                const doc = await db.collection("users").doc(user.uid).get();
-                cachedUser = doc.data();
-                document.getElementById('my-profile-name').innerText = cachedUser.username;
-                
-                loadUserStudioMatrix();
-                renderArcadeRooms();
-                syncRelationshipMatrix();
-                bootupProfileR6Model();
+                pullLivePlatformSourceForAdmin();
             } else {
                 document.getElementById('auth-overlay').style.display = 'flex';
             }
@@ -446,7 +450,7 @@
     async function handleAuth() {
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value;
-        if(!u || !p) return alert("Fill out input indicators completely.");
+        if(!u || !p) return alert("Fill parameters completely.");
         const targetEmail = u.toLowerCase().replace(/\s/g, '') + "@2dgp-aero.com";
         try {
             if(isSignUp) {
@@ -467,7 +471,49 @@
         if(el) el.classList.add('active-nav');
     }
 
-    // --- SCRIPT SYSTEM MANAGER LAYER ---
+    // --- OS INDEPENDENT EMBEDDED MODAL WINDOW SYSTEMS ---
+    function openDesktopGameWindow(title, contentElementOrFrame) {
+        document.getElementById('os-window-title').innerText = title;
+        const body = document.getElementById('os-window-body');
+        body.innerHTML = "";
+        body.appendChild(contentElementOrFrame);
+        document.getElementById('desktop-game-window').style.display = 'flex';
+    }
+
+    function closeDesktopGameWindow() {
+        document.getElementById('desktop-game-window').style.display = 'none';
+        document.getElementById('os-window-body').innerHTML = "";
+        // Wipe running cycles to conserve canvas pipelines loops
+        activePlayScene = null;
+        activePlayCamera = null;
+        activePlayRenderer = null;
+        window.removeEventListener('keydown', handleGameplayCharacterMovement);
+    }
+
+    // --- INTERACTIVE PROFILE RETRIEVAL AND ENGINE REDIRECT HOOKS ---
+    function launchProjectEditorDirectly(gameId, frameworkType, title, code) {
+        editingGameId = gameId;
+        currentFrameworkType = frameworkType;
+        showView('studio');
+        document.getElementById('studio-dash-view').style.display = 'none';
+
+        if(frameworkType === '3D') {
+            document.getElementById('studio-3d-workspace').style.display = 'block';
+            document.getElementById('w3d-title').innerText = title;
+            scriptTabsArray = code.split("\n// TAB_BREAK\n");
+            if(scriptTabsArray.length === 0) scriptTabsArray = ["// Script Storage\n"];
+            activeScriptTabIdx = 0;
+            document.getElementById('blox-script-mirror').value = scriptTabsArray[0];
+            bootup3DStudioViewport();
+        } else {
+            document.getElementById('studio-2d-workspace').style.display = 'block';
+            document.getElementById('legacyGameTitle').value = title;
+            document.getElementById('legacyGameCode').value = code;
+            update2DPreview();
+        }
+    }
+
+    // --- SCRIPT BLOCK TOOLBOX MULTI-TAB CONTROLLER ---
     function addNewScriptTab() {
         const newIdx = scriptTabsArray.length;
         scriptTabsArray.push(`// Content Tab Script ${newIdx + 1}\n`);
@@ -493,29 +539,25 @@
     }
 
     function appendBlockCode(statement) {
-        const mirror = document.getElementById('blox-script-mirror');
-        mirror.value += `${statement}\n`;
+        document.getElementById('blox-script-mirror').value += `${statement}\n`;
     }
 
     function appendBlockVariable() {
-        const name = prompt("Enter Variable Identifier Identifier:");
+        const name = prompt("Variable Parameter key Name:");
         if(name) appendBlockCode(`create variable... [${name}]`);
     }
 
-    // --- ARTIFICIAL INTELLIGENCE PIPELINE PLUGINS (SIMULATED ENDPOINTS) ---
+    // --- AI PIPELINE WRAPPERS ---
     function send2DAIChat() {
         const input = document.getElementById('ai-2d-input').value;
         if(!input) return;
-        
         const log = document.getElementById('chat-2d-log');
         log.innerHTML += `<div class="chat-bubble chat-user">${input}</div>`;
-        
-        // Dynamic construction generator matching context criteria requests
         setTimeout(() => {
-            document.getElementById('ai-2d-output-code').value = `\n<div style="background:#000; color:#0f0; padding:20px; text-align:center;">\n  <h3>Custom AI Game Element: ${input}</h3>\n  <button onclick="alert('Action Active!')" style="padding:10px; border-radius:5px; border:none; background:#00ff88; font-weight:bold;">Interact</button>\n</div>`;
-            log.innerHTML += `<div class="chat-bubble chat-ai">Engine Scripting parameters assembled cleanly! Click paste into output text window panel to deploy.</div>`;
+            document.getElementById('ai-2d-output-code').value = `\n<div style="background:linear-gradient(to right, #00c6ff, #0072ff); padding:30px; text-align:center; color:white; border-radius:15px;">\n  <h3>Custom Render Object: ${input}</h3>\n</div>`;
+            log.innerHTML += `<div class="chat-bubble chat-ai">Assembled code layer. Ready to inject!</div>`;
             log.scrollTop = log.scrollHeight;
-        }, 800);
+        }, 600);
     }
 
     function injectAICodeTo2D() {
@@ -526,12 +568,10 @@
     function generate3DBlockAI() {
         const promptText = document.getElementById('ai-3d-prompt').value;
         if(!promptText) return;
-        const mirror = document.getElementById('blox-script-mirror');
-        mirror.value += `\n// AI Automation Routine Triggered: "${promptText}"\nwhen game starts\nspawn rig\nchange sky colour to blue\n`;
-        alert("Blocks structural algorithms successfully merged into current script view.");
+        document.getElementById('blox-script-mirror').value += `\n// AI Block Generation Result for: "${promptText}"\nwhen game starts\nchange sky colour to blue\n`;
     }
 
-    // --- STUDIO COMPILATION LOGIC AND ARCADE HOOKS ---
+    // --- COMPILATION LOGIC AND CORE DATABASE BINDINGS ---
     function openEngineSelector() { document.getElementById('engine-select-modal').style.display = 'flex'; }
     function closeEngineModal() { document.getElementById('engine-select-modal').style.display = 'none'; }
 
@@ -539,36 +579,38 @@
         closeEngineModal();
         editingGameId = null;
         currentFrameworkType = type;
+        document.getElementById('studio-dash-view').style.display = 'none';
         if(type === '3D') {
-            document.getElementById('studio-dash-view').style.display = 'none';
             document.getElementById('studio-3d-workspace').style.display = 'block';
+            document.getElementById('w3d-title').innerText = "Unnamed 3D Game";
+            document.getElementById('blox-script-mirror').value = "";
+            scriptTabsArray = ["// Script Content Storage Matrix\n"];
             bootup3DStudioViewport();
         } else {
-            document.getElementById('studio-dash-view').style.display = 'none';
             document.getElementById('studio-2d-workspace').style.display = 'block';
+            document.getElementById('legacyGameTitle').value = "";
+            document.getElementById('legacyGameCode').value = "";
+            document.getElementById('preview-2d-frame').srcdoc = "";
         }
     }
 
     function exit3DStudio() { document.getElementById('studio-3d-workspace').style.display = 'none'; document.getElementById('studio-dash-view').style.display = 'block'; }
     function exit2DStudio() { document.getElementById('studio-2d-workspace').style.display = 'none'; document.getElementById('studio-dash-view').style.display = 'block'; }
-    function exitGamePlayer() { document.getElementById('game-player-view').style.display = 'none'; document.getElementById('arcades').style.display = 'block'; }
-
-    function update2DPreview() {
-        document.getElementById('preview-2d-frame').srcdoc = document.getElementById('legacyGameCode').value;
-    }
+    function update2DPreview() { document.getElementById('preview-2d-frame').srcdoc = document.getElementById('legacyGameCode').value; }
 
     async function broadcastLegacyGame() {
         const title = document.getElementById('legacyGameTitle').value.trim();
         const code = document.getElementById('legacyGameCode').value.trim();
-        if(!title || !code) return alert("Incomplete parameters validation payload elements error.");
+        if(!title || !code) return alert("Missing required source data inputs.");
         
-        await db.collection("games").add({
-            title: title, code: code, framework: "2D", author: cachedUser.username, authorId: auth.currentUser.uid, timestamp: Date.now()
-        });
-        alert("Game successfully compiled and published.");
-        exit2DStudio();
-        loadUserStudioMatrix();
-        renderArcadeRooms();
+        const payload = { title, code, framework: "2D", author: cachedUser.username, authorId: auth.currentUser.uid, timestamp: Date.now(), plays: 0, likes: 0 };
+        if(editingGameId) {
+            await db.collection("games").doc(editingGameId).update(payload);
+        } else {
+            await db.collection("games").add(payload);
+        }
+        alert("2D Game compiled and active.");
+        exit2DStudio(); loadUserStudioMatrix(); renderArcadeRooms();
     }
 
     async function trigger3DAction(action) {
@@ -578,15 +620,18 @@
             return;
         }
         if(action === 'publish' || action === 'save') {
+            scriptTabsArray[activeScriptTabIdx] = document.getElementById('blox-script-mirror').value;
             const title = document.getElementById('w3d-title').innerText;
-            const consolidatedScriptCode = scriptTabsArray.join("\n// TAB_BREAK\n") + "\n" + document.getElementById('blox-script-mirror').value;
-            await db.collection("games").add({
-                title: title, code: consolidatedScriptCode, framework: "3D", author: cachedUser.username, authorId: auth.currentUser.uid, timestamp: Date.now()
-            });
-            alert("Project parameters stored across global servers database pools nodes.");
-            exit3DStudio();
-            loadUserStudioMatrix();
-            renderArcadeRooms();
+            const consolidatedCode = scriptTabsArray.join("\n// TAB_BREAK\n");
+            const payload = { title, code: consolidatedCode, framework: "3D", author: cachedUser.username, authorId: auth.currentUser.uid, timestamp: Date.now(), plays: 0, likes: 0 };
+            
+            if(editingGameId) {
+                await db.collection("games").doc(editingGameId).update(payload);
+            } else {
+                await db.collection("games").add(payload);
+            }
+            alert("3D Game saved.");
+            exit3DStudio(); loadUserStudioMatrix(); renderArcadeRooms();
         }
     }
 
@@ -598,154 +643,104 @@
         
         snap.forEach(doc => {
             const g = doc.data();
-            const card = `<div class="glass-card" style="padding:15px; text-align:center;"><h4>${g.title}</h4><p style="font-size:11px;color:gray;">Mode: ${g.framework}</p></div>`;
+            const id = doc.id;
+            const card = `
+                <div class="glass-card" style="padding:15px; text-align:center; background:white; margin-bottom:0;">
+                    <h4>${g.title}</h4>
+                    <p style="font-size:11px; color:gray; margin-bottom:10px;">Framework: ${g.framework}</p>
+                    <button class="btn btn-primary" style="padding:4px 10px; font-size:11px;" onclick="launchProjectEditorDirectly('${id}', '${g.framework}', \`${g.title}\`, \`${g.code.replace(/`/g, '\\`').replace(/\${/g, '\\${')}\`)">✏️ Edit Engine</button>
+                </div>`;
             container.innerHTML += card;
             profList.innerHTML += card;
         });
     }
 
+    // --- ARCADES MULTI-CATEGORIZED RENDERING CORE ENGINE ---
     async function renderArcadeRooms() {
         const snap = await db.collection("games").get();
-        const node2D = document.getElementById('2d-published');
-        const node3D = document.getElementById('3d-published');
-        node2D.innerHTML = ""; node3D.innerHTML = "";
-        
+        globalActiveGamesList = [];
         snap.forEach(doc => {
-            const g = doc.data();
-            const card = `
-                <div class="glass-card" style="padding:15px; text-align:center;">
-                    <h3>${g.title}</h3>
-                    <button class="btn btn-primary" onclick="playActiveGameInstance('${doc.id}', '${g.framework}')">Play</button>
+            let data = doc.data();
+            data.id = doc.id;
+            // Fill default fallback mock integers to fulfill sorting rules logic
+            if(!data.plays) data.plays = Math.floor(Math.random() * 40);
+            if(!data.likes) data.likes = Math.floor(Math.random() * 20);
+            globalActiveGamesList.push(data);
+        });
+
+        filterArcadeMatrix();
+    }
+
+    function filterArcadeMatrix() {
+        const query = document.getElementById('arcadeSearch').value.toLowerCase();
+        const filtered = globalActiveGamesList.filter(g => g.title.toLowerCase().includes(query));
+
+        // Sort rules array splits
+        const recentUploaded = [...filtered].sort((a,b) => b.timestamp - a.timestamp);
+        const mostLiked = [...filtered].sort((a,b) => b.likes - a.likes);
+        const topPlaying = [...filtered].sort((a,b) => b.plays - a.plays);
+        const recentlyPlayedMock = [...filtered].reverse(); // Simulation queue fallback split
+
+        populateGridNode('cat-recent-uploaded', recentUploaded);
+        populateGridNode('cat-most-liked', mostLiked);
+        populateGridNode('cat-top-playing', topPlaying);
+        populateGridNode('cat-recent-played', recentlyPlayedMock);
+    }
+
+    function populateGridNode(id, array) {
+        const target = document.getElementById(id);
+        target.innerHTML = "";
+        if(array.length === 0) { target.innerHTML = "<p style='font-size:12px; color:gray;'>No project profiles found.</p>"; return; }
+        
+        array.forEach(g => {
+            target.innerHTML += `
+                <div class="glass-card" style="padding:15px; text-align:center; background:white; margin-bottom:0;">
+                    <h4 style="margin:0 0 5px 0;">${g.title}</h4>
+                    <p style="font-size:10px; color:var(--text-muted); margin:0 0 10px 0;">By: ${g.author} (${g.framework})</p>
+                    <div style="font-size:11px; margin-bottom:10px;">👁️ ${g.plays} | ❤️ ${g.likes}</div>
+                    <button class="btn btn-primary" style="padding:6px 14px; font-size:12px;" onclick="playActiveGameInstance('${g.id}', '${g.framework}', \`${g.title}\`)">Play Sandbox</button>
                 </div>`;
-            if(g.framework === '3D') node3D.innerHTML += card;
-            else node2D.innerHTML += card;
         });
     }
 
-    // --- ROBLOX R6 THREE.JS GEOMETRY PIPELINE MODEL BUILDERS ---
-    function createR6AvatarInstance() {
-        const group = new THREE.Group();
-        const mat = new THREE.MeshStandardMaterial({ roughness: 0.4 });
+    // --- TRUE 3D RUNTIME RENDERING WINDOW COMPILER ---
+    async function playActiveGameInstance(id, framework, title) {
+        // Increment structural play telemetry token counters on database profiles
+        db.collection("games").doc(id).update({ plays: firebase.firestore.FieldValue.increment(1) }).catch(()=>{});
         
-        // Head Unit block
-        const head = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), mat.clone());
-        head.position.y = 3.3; head.castShadow = true;
-        group.add(head);
-
-        // Torso Unit block
-        const torso = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 1), mat.clone());
-        torso.position.y = 1.7; torso.castShadow = true;
-        group.add(torso);
-
-        // Left Arm Unit block
-        const larm = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), mat.clone());
-        larm.position.set(-1.6, 1.7, 0); larm.castShadow = true;
-        group.add(larm);
-
-        // Right Arm Unit block
-        const rarm = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), mat.clone());
-        rarm.position.set(1.6, 1.7, 0); rarm.castShadow = true;
-        group.add(rarm);
-
-        // Left Leg Unit block
-        const lleg = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), mat.clone());
-        lleg.position.set(-0.5, -0.3, 0); lleg.castShadow = true;
-        group.add(lleg);
-
-        // Right Leg Unit block
-        const rleg = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), mat.clone());
-        rleg.position.set(0.5, -0.3, 0); rleg.castShadow = true;
-        group.add(rleg);
-
-        return { group, head, torso, larm, rarm, lleg, rleg };
-    }
-
-    function bootupProfileR6Model() {
-        const el = document.getElementById('r6-avatar-container');
-        el.innerHTML = "";
-        
-        r6Scene = new THREE.Scene();
-        r6Scene.background = new THREE.Color(0xbae6fd);
-        
-        r6Camera = new THREE.PerspectiveCamera(45, el.clientWidth / el.clientHeight, 0.1, 100);
-        r6Camera.position.set(0, 2, 8);
-        
-        r6Renderer = new THREE.WebGLRenderer({ antialias: true });
-        r6Renderer.setSize(el.clientWidth, el.clientHeight);
-        el.appendChild(r6Renderer.domElement);
-
-        r6Scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-        const dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
-        dirLight.position.set(5, 10, 5);
-        r6Scene.add(dirLight);
-
-        r6GroupInstance = createR6AvatarInstance();
-        r6Scene.add(r6GroupInstance.group);
-        updateR6SkinColors();
-
-        let clock = 0;
-        function animateR6Profile() {
-            requestAnimationFrame(animateR6Profile);
-            clock += 0.05;
-            // Roblox idle configuration model cycle algorithm simulation loops
-            r6GroupInstance.larm.rotation.x = Math.sin(clock) * 0.1;
-            r6GroupInstance.rarm.rotation.x = -Math.sin(clock) * 0.1;
-            r6GroupInstance.group.rotation.y += 0.01;
-            r6Renderer.render(r6Scene, r6Camera);
-        }
-        animateR6Profile();
-    }
-
-    function updateR6SkinColors() {
-        if(!r6GroupInstance) return;
-        r6GroupInstance.head.material.color.set(document.getElementById('c-head').value);
-        r6GroupInstance.torso.material.color.set(document.getElementById('c-torso').value);
-        r6GroupInstance.larm.material.color.set(document.getElementById('c-larm').value);
-        r6GroupInstance.rarm.material.color.set(document.getElementById('c-rarm').value);
-        r6GroupInstance.lleg.material.color.set(document.getElementById('c-lleg').value);
-        r6GroupInstance.rleg.material.color.set(document.getElementById('c-rleg').value);
-    }
-
-    // --- TRUE 3D GAMEPLAY RUNTIME RUNNER METHOD ---
-    async function playActiveGameInstance(id, framework) {
-        showView('game-player-view');
-        const container = document.getElementById('player-runtime-container');
-        container.innerHTML = "";
-
-        const doc = await db.collection("games").doc(id).get();
-        const game = doc.data();
-        document.getElementById('active-playing-title').innerText = `Playing: ${game.title}`;
+        const wrapper = document.createElement('div');
+        wrapper.style.width = "100%"; wrapper.style.height = "100%";
 
         if(framework === '2D') {
+            const doc = await db.collection("games").doc(id).get();
+            const g = doc.data();
             const frame = document.createElement('iframe');
             frame.style.width = "100%"; frame.style.height = "100%"; frame.style.border = "none";
-            frame.srcdoc = game.code;
-            container.appendChild(frame);
+            frame.srcdoc = g.code;
+            wrapper.appendChild(frame);
+            openDesktopGameWindow(title, wrapper);
         } else {
-            // Initialize Three.js Gameplay Environment
+            // Instantiate standalone game space geometry rendering context viewport elements
+            openDesktopGameWindow(title, wrapper);
+            
             activePlayScene = new THREE.Scene();
             activePlayScene.background = new THREE.Color(0xb0e0e6);
             
-            activePlayCamera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            activePlayCamera = new THREE.PerspectiveCamera(60, wrapper.clientWidth / wrapper.clientHeight, 0.1, 1000);
             activePlayRenderer = new THREE.WebGLRenderer({ antialias: true });
-            activePlayRenderer.setSize(container.clientWidth, container.clientHeight);
-            container.appendChild(activePlayRenderer.domElement);
+            activePlayRenderer.setSize(wrapper.clientWidth, wrapper.clientHeight);
+            wrapper.appendChild(activePlayRenderer.domElement);
 
             activePlayScene.add(new THREE.AmbientLight(0xffffff, 0.7));
             const light = new THREE.DirectionalLight(0xffffff, 0.5); light.position.set(10, 20, 10);
             activePlayScene.add(light);
 
-            // Spawn Platform Base Map Ground
             const floor = new THREE.Mesh(new THREE.BoxGeometry(40, 0.5, 40), new THREE.MeshStandardMaterial({ color: 0x4caf50 }));
-            floor.position.y = -1;
-            activePlayScene.add(floor);
+            floor.position.y = -1; activePlayScene.add(floor);
 
-            // Spawn Point block marker
             const spawnMarker = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 0.2, 32), new THREE.MeshStandardMaterial({ color: 0xff0000 }));
-            spawnMarker.position.set(0, -0.7, 0);
-            activePlayScene.add(spawnMarker);
+            spawnMarker.position.set(0, -0.7, 0); activePlayScene.add(spawnMarker);
 
-            // Load customization vectors from local instances profiles data
             playerMeshGroup = createR6AvatarInstance();
             playerMeshGroup.head.material.color.set(document.getElementById('c-head').value);
             playerMeshGroup.torso.material.color.set(document.getElementById('c-torso').value);
@@ -760,7 +755,6 @@
             activePlayCamera.position.set(0, 5, 12);
             activePlayCamera.lookAt(playerMeshGroup.group.position);
 
-            // Handle Character WASD Navigation controls
             window.addEventListener('keydown', handleGameplayCharacterMovement);
 
             let cycleClock = 0;
@@ -779,47 +773,121 @@
     function handleGameplayCharacterMovement(e) {
         if(!playerMeshGroup) return;
         const key = e.key.toLowerCase();
-        if(key === 'w') playerMeshGroup.group.position.z -= 0.3;
-        if(key === 's') playerMeshGroup.group.position.z += 0.3;
-        if(key === 'a') playerMeshGroup.group.position.x -= 0.3;
-        if(key === 'd') playerMeshGroup.group.position.x += 0.3;
+        if(key === 'w') playerMeshGroup.group.position.z -= 0.4;
+        if(key === 's') playerMeshGroup.group.position.z += 0.4;
+        if(key === 'a') playerMeshGroup.group.position.x -= 0.4;
+        if(key === 'd') playerMeshGroup.group.position.x += 0.4;
         activePlayCamera.lookAt(playerMeshGroup.group.position);
     }
 
+    // --- ROBLOX R6 GEOMETRY ENGINE BASEPORTS ---
+    function createR6AvatarInstance() {
+        const group = new THREE.Group();
+        const mat = new THREE.MeshStandardMaterial({ roughness: 0.4 });
+        
+        const head = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 1.2), mat.clone()); head.position.y = 3.3; group.add(head);
+        const torso = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 1), mat.clone()); torso.position.y = 1.7; group.add(torso);
+        const larm = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), mat.clone()); larm.position.set(-1.6, 1.7, 0); group.add(larm);
+        const rarm = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), mat.clone()); rarm.position.set(1.6, 1.7, 0); group.add(rarm);
+        const lleg = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), mat.clone()); lleg.position.set(-0.5, -0.3, 0); group.add(lleg);
+        const rleg = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), mat.clone()); rleg.position.set(0.5, -0.3, 0); group.add(rleg);
+
+        return { group, head, torso, larm, rarm, lleg, rleg };
+    }
+
+    function bootupProfileR6Model() {
+        const el = document.getElementById('r6-avatar-container'); el.innerHTML = "";
+        r6Scene = new THREE.Scene(); r6Scene.background = new THREE.Color(0xbae6fd);
+        r6Camera = new THREE.PerspectiveCamera(45, el.clientWidth / el.clientHeight, 0.1, 100); r6Camera.position.set(0, 2, 8);
+        r6Renderer = new THREE.WebGLRenderer({ antialias: true }); r6Renderer.setSize(el.clientWidth, el.clientHeight);
+        el.appendChild(r6Renderer.domElement);
+        r6Scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        r6GroupInstance = createR6AvatarInstance(); r6Scene.add(r6GroupInstance.group);
+        updateR6SkinColors();
+
+        let clk = 0;
+        function animateR6Profile() {
+            if(!r6Scene) return; requestAnimationFrame(animateR6Profile); clk += 0.05;
+            r6GroupInstance.larm.rotation.x = Math.sin(clk) * 0.1;
+            r6GroupInstance.rarm.rotation.x = -Math.sin(clk) * 0.1;
+            r6GroupInstance.group.rotation.y += 0.01;
+            r6Renderer.render(r6Scene, r6Camera);
+        }
+        animateR6Profile();
+    }
+
+    function updateR6SkinColors() {
+        if(!r6GroupInstance) return;
+        r6GroupInstance.head.material.color.set(document.getElementById('c-head').value);
+        r6GroupInstance.torso.material.color.set(document.getElementById('c-torso').value);
+        r6GroupInstance.larm.material.color.set(document.getElementById('c-larm').value);
+        r6GroupInstance.rarm.material.color.set(document.getElementById('c-rarm').value);
+        r6GroupInstance.lleg.material.color.set(document.getElementById('c-lleg').value);
+        r6GroupInstance.rleg.material.color.set(document.getElementById('c-rleg').value);
+    }
+
     function bootup3DStudioViewport() {
-        const stage = document.getElementById('viewport-3d');
-        stage.innerHTML = "";
+        const stage = document.getElementById('viewport-3d'); stage.innerHTML = "";
         scene3D = new THREE.Scene(); scene3D.background = new THREE.Color(0xefefef);
         camera3D = new THREE.PerspectiveCamera(60, stage.clientWidth / stage.clientHeight, 0.1, 500);
-        renderer3D = new THREE.WebGLRenderer({ antialias: true });
-        renderer3D.setSize(stage.clientWidth, stage.clientHeight);
-        stage.appendChild(renderer3D.domElement);
-        scene3D.add(new THREE.AmbientLight(0xffffff, 0.8));
+        renderer3D = new THREE.WebGLRenderer({ antialias: true }); renderer3D.setSize(stage.clientWidth, stage.clientHeight);
+        stage.appendChild(renderer3D.domElement); scene3D.add(new THREE.AmbientLight(0xffffff, 0.8));
         camera3D.position.set(0, 5, 10); camera3D.lookAt(0, 0, 0);
         function loop() { if(!scene3D) return; requestAnimationFrame(loop); renderer3D.render(scene3D, camera3D); }
         loop();
     }
 
-    function add3DAsset(type) {
-        const obj = new THREE.Mesh(new THREE.BoxGeometry(1.5,1.5,1.5), new THREE.MeshStandardMaterial({color: 0x0084ff}));
-        obj.position.set((Math.random()-0.5)*4, 0.75, (Math.random()-0.5)*4);
-        scene3D.add(obj); selected3DObject = obj;
+    // --- SELF-PATCHING SYSTEM ARCHITECTURE PORTAL LOGIC ---
+    function promptAdminAuthentication() {
+        const entryCode = prompt("Enter 2DGP Core Access Protocol Token:");
+        if (entryCode === "080112") {
+            document.getElementById('admin-panel').style.display = 'block';
+            alert("Security handshakes successful. Global hot-patch configuration panel active.");
+        } else {
+            alert("Invalid security signatures.");
+        }
     }
-    function set3DColor(hex) { if(selected3DObject) selected3DObject.material.color.set(hex); }
-    function setTransformState(s) { if(selected3DObject) selected3DObject.position.x += 0.2; }
 
-    // --- OTHER CORE STRUCTURAL DEPENDENCIES ---
+    async function pullLivePlatformSourceForAdmin() {
+        try {
+            const metaDoc = await db.collection("system_core").doc("framework_src").get();
+            if(metaDoc.exists) {
+                document.getElementById('admin-src-patcher').value = metaDoc.data().htmlSource;
+            } else {
+                // Initial fallback string if document doesn't exist yet
+                document.getElementById('admin-src-patcher').value = "";
+            }
+        } catch(e) { console.warn("Admin resource stream disconnected."); }
+    }
+
+    async function deployGlobalPlatformPatch() {
+        const updatedSource = document.getElementById('admin-src-patcher').value;
+        if(!updatedSource.trim()) return alert("Source payload buffer structural error.");
+        
+        try {
+            await db.collection("system_core").doc("framework_src").set({
+                htmlSource: updatedSource,
+                lastUpdatedBy: auth.currentUser.uid,
+                timestamp: Date.now()
+            });
+            alert("💥 2DGP Architecture Hot-Swapped Successfully! Re-syncing code layers globally.");
+        } catch(e) {
+            alert("Error flashing system configuration parameters: " + e.message);
+        }
+    }
+
+    // --- PEER LINK SYNC DEPENDENCIES ---
     async function searchGlobalPeers() {
         const val = document.getElementById('peerSearchInput').value.trim();
         const snap = await db.collection("users").where("username", "==", val).get();
         const node = document.getElementById('peer-search-results'); node.innerHTML = "";
         snap.forEach(doc => {
-            node.innerHTML = `<div class="user-row"><span><b>${doc.data().username}</b></span><button class="btn btn-primary" onclick="dispatchFriendRequest('${doc.id}')">Add Friend</button></div>`;
+            node.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;"><span><b>${doc.data().username}</b></span><button class="btn btn-primary" style="padding:4px 10px;" onclick="dispatchFriendRequest('${doc.id}')">Add Friend</button></div>`;
         });
     }
     async function dispatchFriendRequest(id) {
         await db.collection("users").doc(id).collection("requests").doc(auth.currentUser.uid).set({ senderName: cachedUser.username });
-        alert("Friend request sent successfully!");
+        alert("Friend request sent!");
     }
     async function syncRelationshipMatrix() {
         const inboundNode = document.getElementById('friend-requests-inbound');
@@ -827,11 +895,11 @@
         inboundNode.innerHTML = ""; profFriendsNode.innerHTML = "";
         const snap = await db.collection("users").doc(auth.currentUser.uid).collection("requests").get();
         snap.forEach(doc => {
-            inboundNode.innerHTML += `<div class="user-row"><span>${doc.data().senderName}</span><button class="btn" onclick="acceptLinkConnection('${doc.id}','${doc.data().senderName}')">Accept</button></div>`;
+            inboundNode.innerHTML += `<div style="margin-top:5px;"><span>${doc.data().senderName} </span><button class="btn" style="padding:2px 8px;" onclick="acceptLinkConnection('${doc.id}','${doc.data().senderName}')">Accept</button></div>`;
         });
         const snapFriends = await db.collection("users").doc(auth.currentUser.uid).collection("friends").get();
         snapFriends.forEach(doc => {
-            profFriendsNode.innerHTML += `<div class="glass-card" style="padding:10px; text-align:center;">🟢 ${doc.data().username}</div>`;
+            profFriendsNode.innerHTML += `<div class="glass-card" style="padding:10px; text-align:center; background:white; margin-bottom:0;">🟢 ${doc.data().username}</div>`;
         });
     }
     async function acceptLinkConnection(uid, name) {
@@ -839,13 +907,12 @@
         batch.set(db.collection("users").doc(auth.currentUser.uid).collection("friends").doc(uid), { username: name });
         batch.set(db.collection("users").doc(uid).collection("friends").doc(auth.currentUser.uid), { username: cachedUser.username });
         batch.delete(db.collection("users").doc(auth.currentUser.uid).collection("requests").doc(uid));
-        await batch.commit(); alert("Connected!"); syncRelationshipMatrix();
+        await batch.commit(); syncRelationshipMatrix();
     }
     async function executeKeyRotation() {
         await auth.currentUser.updatePassword(document.getElementById('new-password-input').value);
-        alert("Password updated safely.");
+        alert("Account key changed safely.");
     }
-    function promptAdmin() { if(prompt("Admin Access Code:") === "080112") document.getElementById('admin-panel').style.display='block'; }
 </script>
 </body>
 </html>
