@@ -14,13 +14,27 @@
     <style>
         :root {
             --bg-base: #eaf6fc;
+            --bg-gradient: radial-gradient(circle at 0% 0%, #cceeff 0%, #eaf6fc 50%, #d1f7c4 100%);
             --aero-blue: linear-gradient(135deg, #7ad3ff 0%, #0084ff 100%);
             --aero-green: linear-gradient(135deg, #baff7a 0%, #29b300 100%);
             --glass-card: rgba(255, 255, 255, 0.65);
             --glass-border: rgba(255, 255, 255, 0.6);
             --text-main: #0c2b45;
             --text-muted: #4f7496;
+            --panel-bg: rgba(255, 255, 255, 0.8);
             --shadow-gloss: 0 8px 32px 0 rgba(31, 135, 240, 0.15);
+        }
+
+        /* Dark Mode Override Layer Variable Bindings */
+        body.dark-mode {
+            --bg-base: #0a0f1d;
+            --bg-gradient: radial-gradient(circle at 0% 0%, #0d1b2a 0%, #0a0f1d 60%, #1b263b 100%);
+            --glass-card: rgba(16, 24, 48, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --panel-bg: rgba(22, 32, 64, 0.85);
+            --shadow-gloss: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         }
 
         * {
@@ -29,7 +43,7 @@
 
         body {
             font-family: 'Segoe UI', sans-serif;
-            background: var(--bg-base) radial-gradient(circle at 0% 0%, #cceeff 0%, #eaf6fc 50%, #d1f7c4 100%);
+            background: var(--bg-base) var(--bg-gradient);
             background-attachment: fixed;
             color: var(--text-main);
             margin: 0;
@@ -37,6 +51,7 @@
             display: flex;
             min-height: 100vh;
             overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
         }
 
         nav {
@@ -53,6 +68,10 @@
             left: 0;
             bottom: 0;
             z-index: 100;
+        }
+
+        body.dark-mode nav {
+            background: rgba(10, 15, 30, 0.5);
         }
 
         .logo {
@@ -79,6 +98,7 @@
         }
 
         .nav-item:hover { background: rgba(255, 255, 255, 0.7); color: #0072ff; transform: translateX(4px); }
+        body.dark-mode .nav-item:hover { background: rgba(255, 255, 255, 0.1); color: #00c6ff; }
         .active-nav { background: var(--aero-blue); color: white !important; box-shadow: 0 6px 20px rgba(0, 132, 255, 0.35); }
 
         main { 
@@ -121,11 +141,15 @@
             outline: none;
             font-family: inherit;
         }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+            background: rgba(20, 30, 55, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
 
         .btn {
             background: linear-gradient(to bottom, #ffffff 0%, #eaeaea 100%);
             border: 1px solid rgba(0,0,0,0.15);
-            color: var(--text-main);
+            color: #0c2b45;
             padding: 12px 24px;
             border-radius: 16px;
             font-weight: 700;
@@ -136,21 +160,29 @@
             justify-content: center;
             gap: 8px;
         }
+        body.dark-mode .btn:not(.btn-primary) {
+            background: linear-gradient(to bottom, #2d3748 0%, #1a202c 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #e2e8f0;
+        }
         .btn:active { transform: scale(0.96); }
         .btn-primary { background: var(--aero-blue); color: white; border: none; }
 
         .script-tabs { display: flex; gap: 5px; margin-bottom: 10px; background: rgba(0,0,0,0.05); padding: 5px; border-radius: 10px; }
-        .script-tab { padding: 6px 12px; background: white; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+        .script-tab { padding: 6px 12px; background: white; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; color: #0c2b45; }
         .script-tab.active-tab { background: #0084ff; color: white; }
 
         .engine-window { display: grid; grid-template-columns: 280px 1fr 320px; gap: 20px; height: calc(100vh - 180px); width: 100%; }
-        .engine-panel { background: rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; border: 1px solid var(--glass-border); }
+        .engine-panel { background: var(--panel-bg); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; border: 1px solid var(--glass-border); }
         
         .ai-split-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 25px; height: 320px; width: 100%; }
-        .chat-log { background: white; border-radius: 15px; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; border: 1px solid rgba(0,0,0,0.1); }
+        .chat-log { background: white; border-radius: 15px; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; border: 1px solid rgba(0,0,0,0.1); color: #0c2b45; }
+        body.dark-mode .chat-log { background: #121b2e; border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; }
         .chat-bubble { padding: 10px 14px; border-radius: 12px; max-width: 80%; font-size: 14px; line-height: 1.4; }
         .chat-user { background: #e2f3ff; align-self: flex-end; color: #004b8d; }
+        body.dark-mode .chat-user { background: #1e3a8a; color: #93c5fd; }
         .chat-ai { background: #f0f0f0; align-self: flex-start; }
+        body.dark-mode .chat-ai { background: #1e293b; }
 
         .blox-block { padding: 10px 14px; border-radius: 10px; color: white; font-weight: bold; font-size: 12px; margin: 4px 0; cursor: grab; user-select: none; transition: transform 0.1s; }
         .blox-block:hover { transform: scale(1.02); }
@@ -160,7 +192,9 @@
         .b-html { background: #a855f7; box-shadow: 0 4px 10px rgba(168,85,247,0.2); }
 
         .avatar-viewport { width: 100%; height: 280px; background: linear-gradient(to bottom, #e0f2fe, #bae6fd); border-radius: 18px; border: 1px solid var(--glass-border); }
+        body.dark-mode .avatar-viewport { background: linear-gradient(to bottom, #1e293b, #0f172a); }
         .color-picker-row { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; background: rgba(255,255,255,0.4); padding: 8px 12px; border-radius: 10px; }
+        body.dark-mode .color-picker-row { background: rgba(0,0,0,0.2); }
 
         .aero-modal-bg { position: fixed; inset: 0; background: rgba(12, 43, 69, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 5000; display: none; align-items: center; justify-content: center; }
 
@@ -175,8 +209,13 @@
             border: 1px solid rgba(255,255,255,0.7); display: flex; flex-direction: column;
             overflow: hidden; animation: windowSpawn 0.35s cubic-bezier(0.1, 0.9, 0.2, 1);
         }
+        body.dark-mode .os-window {
+            background: rgba(20, 30, 55, 0.95);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
         @keyframes windowSpawn { from { transform: scale(0.9) translateY(30px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
         .os-header { background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(235,245,255,0.7)); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        body.dark-mode .os-header { background: linear-gradient(to bottom, #1e293b, #0f172a); border-bottom: 1px solid rgba(255,255,255,0.1); }
         .os-title { font-weight: 700; color: var(--text-main); font-size: 16px; }
         .os-close { background: #ff5f56; border: none; width: 18px; height: 18px; border-radius: 50%; cursor: pointer; color: transparent; font-size: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: background 0.2s; }
         .os-close:hover { background: #e0443c; color: white; }
@@ -196,7 +235,7 @@
 </div>
 
 <div id="engine-select-modal" class="aero-modal-bg">
-    <div class="glass-card" style="width: 420px; text-align: center; background: white; margin-bottom:0;">
+    <div class="glass-card" style="width: 420px; text-align: center; background: var(--panel-bg); margin-bottom:0;">
         <h2 style="margin-top:0;">Create a New Game</h2>
         <p style="color: var(--text-muted); margin-bottom: 25px;">Select your framework mode:</p>
         <div style="display:flex; gap:15px; justify-content:center;">
@@ -208,7 +247,7 @@
 </div>
 
 <div id="auth-overlay" style="position:fixed; inset:0; background:var(--bg-base); z-index:10000; display:flex; align-items:center; justify-content:center;">
-    <div class="glass-card" style="width:360px; text-align:center; margin-bottom:0;">
+    <div class="glass-card" style="width:360px; text-align:center; margin-bottom:0; background: var(--panel-bg);">
         <div class="logo">2DGP Platform</div>
         <h3 id="auth-title">Account Login</h3>
         <input type="text" id="username" placeholder="Username" style="width:100%; margin-bottom:12px;">
@@ -405,6 +444,9 @@
     <section id="settings" class="view">
         <h1>Account Controls</h1>
         <div class="glass-card" style="max-width:650px;">
+            <h3 style="margin-top:0;">System Theme Configuration</h3>
+            <button class="btn btn-primary" onclick="toggleSystemTheme()" style="width:100%; margin-bottom:30px;">🌗 Toggle Dark Mode / Midnight Glow</button>
+
             <h3 style="margin-top:0;">Update Password Key</h3>
             <input type="password" id="new-password-input" placeholder="Configure new password units..." style="width:100%; margin-bottom:15px;">
             <button class="btn btn-primary" onclick="executeKeyRotation()">Commit Change</button>
@@ -502,6 +544,15 @@
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
         if(el) el.classList.add('active-nav');
+    }
+
+    // --- DARK MODE THEME CONTROLLER ---
+    function toggleSystemTheme() {
+        document.body.classList.toggle('dark-mode');
+        // Trigger a 3D canvas render adjust if engines are active
+        if (renderer3D && scene3D) {
+            scene3D.background = new THREE.Color(document.body.classList.contains('dark-mode') ? 0x121b2e : 0xefefef);
+        }
     }
 
     // --- OS INDEPENDENT EMBEDDED MODAL WINDOW SYSTEMS ---
@@ -677,7 +728,7 @@
             const g = doc.data();
             const id = doc.id;
             const card = `
-                <div class="glass-card" style="padding:20px; text-align:center; background:white; margin-bottom:0; border-radius:16px;">
+                <div class="glass-card" style="padding:20px; text-align:center; background:var(--panel-bg); margin-bottom:0; border-radius:16px;">
                     <h4 style="margin:0 0 5px 0;">${g.title}</h4>
                     <p style="font-size:11px; color:gray; margin:0 0 12px 0;">Framework: ${g.framework}</p>
                     <button class="btn btn-primary" style="padding:6px 14px; font-size:12px; width:100%;" onclick="launchProjectEditorDirectly('${id}', '${g.framework}', \`${g.title}\`, \`${g.code.replace(/`/g, '\\`').replace(/\${/g, '\\${')}\`)">✏️ Edit Engine</button>
@@ -694,8 +745,8 @@
         snap.forEach(doc => {
             let data = doc.data();
             data.id = doc.id;
-            if(!data.plays) data.plays = Math.floor(Math.random() * 40);
-            if(!data.likes) data.likes = Math.floor(Math.random() * 20);
+            if(!data.plays) data.plays = 0;
+            if(!data.likes) data.likes = 0;
             globalActiveGamesList.push(data);
         });
 
@@ -716,7 +767,6 @@
         populateGridNode('cat-top-playing', topPlaying);
         populateGridNode('cat-recent-played', recentlyPlayedMock);
         
-        // Also drop some into home featured showcase for layout consistency
         populateGridNode('featured-showcase', topPlaying.slice(0, 3));
     }
 
@@ -727,19 +777,37 @@
         
         array.forEach(g => {
             target.innerHTML += `
-                <div class="glass-card" style="padding:20px; text-align:center; background:white; margin-bottom:0; border-radius:16px;">
+                <div class="glass-card" style="padding:20px; text-align:center; background:var(--panel-bg); margin-bottom:0; border-radius:16px; position:relative; z-index:5;">
                     <h4 style="margin:0 0 5px 0;">${g.title}</h4>
                     <p style="font-size:11px; color:var(--text-muted); margin:0 0 12px 0;">By: ${g.author} (${g.framework})</p>
-                    <div style="font-size:12px; margin-bottom:12px; font-weight:600;">👁️ ${g.plays} | ❤️ ${g.likes}</div>
-                    <button class="btn btn-primary" style="padding:8px 16px; font-size:12px; width:100%;" onclick="playActiveGameInstance('${g.id}', '${g.framework}', \`${g.title}\`)">Play Sandbox</button>
+                    <div style="font-size:12px; margin-bottom:12px; font-weight:600;">👁️ ${g.plays} | ❤️ <span id="like-count-${id}-${g.id}">${g.likes}</span></div>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-primary" style="padding:8px 16px; font-size:12px; flex:1;" onclick="playActiveGameInstance('${g.id}', '${g.framework}', \`${g.title}\`)">Play Sandbox</button>
+                        <button class="btn" style="padding:8px 12px; font-size:12px;" onclick="likeActiveGameInstance('${g.id}', '${id}-${g.id}')">❤️</button>
+                    </div>
                 </div>`;
         });
+    }
+
+    async function likeActiveGameInstance(gameId, elementSuffix) {
+        try {
+            await db.collection("games").doc(gameId).update({ likes: firebase.firestore.FieldValue.increment(1) });
+            const label = document.getElementById(`like-count-${elementSuffix}`);
+            if (label) {
+                label.innerText = parseInt(label.innerText) + 1;
+            }
+            // Sync background game lists
+            globalActiveGamesList.forEach(g => { if(g.id === gameId) g.likes++; });
+        } catch(e) { console.error("Error rating project instance.", e); }
     }
 
     // --- TRUE 3D RUNTIME RENDERING WINDOW COMPILER ---
     async function playActiveGameInstance(id, framework, title) {
         db.collection("games").doc(id).update({ plays: firebase.firestore.FieldValue.increment(1) }).catch(()=>{});
         
+        // Update local data trace
+        globalActiveGamesList.forEach(g => { if(g.id === id) g.plays++; });
+
         const wrapper = document.createElement('div');
         wrapper.style.width = "100%"; wrapper.style.height = "100%";
 
@@ -797,7 +865,7 @@
                 playerMeshGroup.rarm.rotation.x = -Math.sin(cycleClock) * 0.2;
                 activePlayRenderer.render(activePlayScene, activePlayCamera);
             }
-            runGameplay3Loop();
+            runGameplay3DLoop();
         }
     }
 
@@ -859,7 +927,7 @@
 
     function bootup3DStudioViewport() {
         const stage = document.getElementById('viewport-3d'); stage.innerHTML = "";
-        scene3D = new THREE.Scene(); scene3D.background = new THREE.Color(0xefefef);
+        scene3D = new THREE.Scene(); scene3D.background = new THREE.Color(document.body.classList.contains('dark-mode') ? 0x121b2e : 0xefefef);
         camera3D = new THREE.PerspectiveCamera(60, stage.clientWidth / stage.clientHeight, 0.1, 500);
         renderer3D = new THREE.WebGLRenderer({ antialias: true }); renderer3D.setSize(stage.clientWidth, stage.clientHeight);
         stage.appendChild(renderer3D.domElement); scene3D.add(new THREE.AmbientLight(0xffffff, 0.8));
@@ -912,7 +980,7 @@
         const snap = await db.collection("users").where("username", "==", val).get();
         const node = document.getElementById('peer-search-results'); node.innerHTML = "";
         snap.forEach(doc => {
-            node.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:white; padding:12px; border-radius:14px; border:1px solid rgba(0,0,0,0.05);"><span><b>${doc.data().username}</b></span><button class="btn btn-primary" style="padding:6px 12px; font-size:12px;" onclick="dispatchFriendRequest('${doc.id}')">Add Friend</button></div>`;
+            node.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:var(--panel-bg); padding:12px; border-radius:14px; border:1px solid rgba(0,0,0,0.05);"><span><b>${doc.data().username}</b></span><button class="btn btn-primary" style="padding:6px 12px; font-size:12px;" onclick="dispatchFriendRequest('${doc.id}')">Add Friend</button></div>`;
         });
     }
     async function dispatchFriendRequest(id) {
@@ -925,12 +993,12 @@
         inboundNode.innerHTML = ""; profFriendsNode.innerHTML = "";
         const snap = await db.collection("users").doc(auth.currentUser.uid).collection("requests").get();
         snap.forEach(doc => {
-            inboundNode.innerHTML += `<div style="margin-top:5px; background:white; padding:10px; border-radius:12px; display:inline-flex; align-items:center; gap:10px;"><span><b>${doc.data().senderName}</b></span><button class="btn" style="padding:4px 10px; font-size:12px;" onclick="acceptLinkConnection('${doc.id}','${doc.data().senderName}')">Accept</button></div>`;
+            inboundNode.innerHTML += `<div style="margin-top:5px; background:var(--panel-bg); padding:10px; border-radius:12px; display:inline-flex; align-items:center; gap:10px;"><span><b>${doc.data().senderName}</b></span><button class="btn" style="padding:4px 10px; font-size:12px;" onclick="acceptLinkConnection('${doc.id}','${doc.data().senderName}')">Accept</button></div>`;
         });
         const snapFriends = await db.collection("users").doc(auth.currentUser.uid).collection("friends").get();
         snapFriends.forEach(doc => {
             profFriendsNode.innerHTML += `
-                <div class="glass-card" style="padding:15px; text-align:center; background:white; margin-bottom:0; border-radius:16px;">
+                <div class="glass-card" style="padding:15px; text-align:center; background:var(--panel-bg); margin-bottom:0; border-radius:16px;">
                     <div style="font-weight:700;">🟢 ${doc.data().username}</div>
                 </div>`;
         });
